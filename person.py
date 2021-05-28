@@ -35,7 +35,7 @@ class Person:
         nonsmokers = 0
         for i in range(x-1, x+2):
             for j in range(y-1, y+2):
-                if (i,j) in grid.filled_cells:
+                if (i, j) in grid.filled_cells:
                     if grid.filled_cells[(i, j)].smoker == True:
                         smokers += 1
                     else:
@@ -68,9 +68,9 @@ class Person:
 
     def check_death(self, grid):
         random_death = random()
-        if random_death <= self.chances_to_die:
+        if random_death <= self.chances_to_die():
             x, y = self.position
-            grid[x, y] = EMPTY_CELL
+            grid.filled_cells.pop((x, y))
 
     def __str__(self):
         return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}, state: {self.state}'
@@ -114,7 +114,7 @@ class Grid:
         for position in list(self.filled_cells.keys()):
             self.filled_cells[position].move(self)
 
-    def random_start(self, percent_of_people = 1, children = 0.16, teen = 0.1, young = 0.3, adult = 0.27, elderly = 0.17):
+    def random_start(self, percent_of_people=0.5, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
         people_count = round(self.size[0]*self.size[1]*percent_of_people)
 
         children_count = round(people_count*children)
@@ -152,7 +152,8 @@ class Grid:
                     age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
 
                 while True:
-                    position = (randint(0, self.size[0]-1), randint(0, self.size[1]-1))
+                    position = (
+                        randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                     if position not in self.filled_cells:
                         self.filled_cells[position] = new_person
                         new_person.position = position
@@ -173,21 +174,14 @@ class Grid:
 
     def to_matrix(self):
         states = {'died': 0,
-                'nonsmoker_low_prob': 1,
-                'nonsmoker_high_prob': 2,
-                'smoker_beginner': 3,
-                'smoker_pro': 4,
-                'smoker_in_the_past': 5}
-        matrix = np.zeros(shape = (self.size[0], self.size[1]))
+                  'nonsmoker_low_prob': 1,
+                  'nonsmoker_high_prob': 2,
+                  'smoker_beginner': 3,
+                  'smoker_pro': 4,
+                  'smoker_in_the_past': 5}
+        matrix = np.zeros(shape=(self.size[0], self.size[1]))
         for position in self.filled_cells:
             x, y = position
             person = self.filled_cells[position]
             matrix[x, y] = states[person.state]
         return matrix
-
-grid = Grid((10, 10))
-grid.random_start()
-for i in grid.filled_cells:
-    print(grid.filled_cells[i])
-
-print(grid.to_matrix())
