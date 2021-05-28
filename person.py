@@ -4,8 +4,8 @@ EMPTY_CELL = None
 
 
 class Person:
-    def __init__(self, age: int, smoker: bool, smoking_period: int, smoking_parents: float, position: tuple = None, 
-    chances_to_start: float = None, chances_to_stop: float = None, chances_to_die: float = None,):
+    def __init__(self, age: int, smoker: bool, smoking_period: int, smoking_parents: float, position: tuple = None,
+                 chances_to_start: float = None, chances_to_stop: float = None, chances_to_die: float = None,):
         self.position = position
         self.age = age
         self.smoking_parents = smoking_parents
@@ -69,7 +69,7 @@ class Person:
         if random_death <= self.chances_to_die:
             x, y = self.position
             grid[x, y] = EMPTY_CELL
-    
+
     def __str__(self):
         return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}'
 
@@ -87,6 +87,7 @@ class Person:
             grid.filled_cells.pop(self.position)
             self.position = new_position
             grid.filled_cells[self.position] = self
+            break
 
 
 class Grid:
@@ -100,13 +101,16 @@ class Grid:
         self.filled_cells[position] = value
 
     def is_occupied(self, position):
-        return self.filled_cells[position] is not None
+        try:
+            return self.filled_cells[position] is not None
+        except KeyError:
+            return False
 
     def next_iteration(self):
-        for position in self.filled_cells.keys():
+        for position in list(self.filled_cells.keys()):
             self.filled_cells[position].move(self)
 
-    def random_start(self, percent_of_people = 0.01, children = 0.15, teen = 0.1, young = 0.44, adult = 0.14, elderly = 0.17):
+    def random_start(self, percent_of_people=0.01, children=0.15, teen=0.1, young=0.44, adult=0.14, elderly=0.17):
         people_count = round(self.size[0]*self.size[1]*percent_of_people)
 
         children_count = round(people_count*children)
@@ -114,14 +118,13 @@ class Grid:
         young_count = round(people_count*young)
         adult_count = round(people_count*adult)
         elderly_count = round(people_count*elderly)
-        
-        people = {'children': (children_count, [0, 14], 0),
-                    'teen': (teen_count, [15, 24], 0.187),
-                    'young': (young_count, [25, 54], 0.324),
-                    'adult': (adult_count, [55, 64], 0.229),
-                    'elderly': (elderly_count, [65, 85], 0.06)}
-        # people = [children, teen, young, adult, elderly]
 
+        people = {'children': (children_count, [0, 14], 0),
+                  'teen': (teen_count, [15, 24], 0.187),
+                  'young': (young_count, [25, 54], 0.324),
+                  'adult': (adult_count, [55, 64], 0.229),
+                  'elderly': (elderly_count, [65, 85], 0.06)}
+        # people = [children, teen, young, adult, elderly]
 
         for person_type in people:
             for i in range(people[person_type][0]):
@@ -138,22 +141,16 @@ class Grid:
                     smoking_period = randrange(age-10)
                 else:
                     smoking_period = None
-                
+
                 smoking_parents = choice([True, False])
 
-                new_person = Person(age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
+                new_person = Person(
+                    age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
 
                 while True:
-                    position = (randint(0, self.size[0]), randint(0, self.size[1]))
+                    position = (
+                        randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                     if position not in self.filled_cells:
                         self.filled_cells[position] = new_person
                         new_person.position = position
                         break
-                    else:
-                        position = (randint(0, self.size[0]), randint(0, self.size[1]))
-
-
-grid = Grid((100, 100))
-grid.random_start()
-for i in grid.filled_cells:
-    print(grid.filled_cells[i])
