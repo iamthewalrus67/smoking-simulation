@@ -81,6 +81,8 @@ class Person:
             new_x = self.position[0] + random_direction[0]
             new_y = self.position[1] + random_direction[1]
             new_position = (new_x, new_y)
+            if new_position == self.position:
+                break
             if grid.is_occupied(new_position) or new_x not in range(grid.size[0]) or new_y not in range(grid.size[1]):
                 continue
 
