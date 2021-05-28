@@ -3,6 +3,13 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 EMPTY_CELL = None
 
+import numpy as np
+import seaborn as sns
+import matplotlib.pylab as plt
+
+
+
+
 
 class Person:
     def __init__(self, age: int, smoker: bool, smoking_period: int, smoking_parents: float, position: tuple = None,
@@ -20,13 +27,13 @@ class Person:
 
     def influence_weight(self):
         if self.age < 15:
-            return 2
-        if 15 < self.age < 25:
-            return 1.75
-        if self.age < 55:
             return 1.5
+        if 15 < self.age < 25:
+            return 1.4
+        if self.age < 55:
+            return 1.3
         if self.age < 65:
-            return 1.25
+            return 1.2
         return 1
 
     def check_neighbors(self, grid):
@@ -43,19 +50,26 @@ class Person:
         return smokers, nonsmokers
 
     def chances_to_die(self):
-        weight_of_age = None
-        weight_of_smoking_period = 0.05
+        chances = 0.03
 
-        chances = self.smoking_period * weight_of_smoking_period
+        weight_of_smoking_period = 0.01
+        weight_of_smoking_period_pro = 0.02
+        if self.smoking_period:
+            if self.smoking_period <= 10:
+                chances = self.smoking_period * weight_of_smoking_period
+            else:
+                chances = 10 * weight_of_smoking_period + (self.smoking_period - 10) * weight_of_smoking_period_pro
         return chances
 
     def chances_to_start(self, grid):
-        weight_of_smoking_parents = 0.1
+        if self.smoking_parents:
+            weight_of_smoking_parents = 2
+        else:
+            weight_of_smoking_parents = 1
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_smokers = smokers / (smokers+nonsmokers)
-        chances = percent_of_smokers * self.influence_weight() + self.smoking_parents * \
-            weight_of_smoking_parents
+        chances = percent_of_smokers * self.influence_weight() * weight_of_smoking_parents
         return min(chances, 1)
 
     def chances_to_stop(self, grid):
@@ -63,7 +77,8 @@ class Person:
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_nonsmokers = nonsmokers / (smokers+nonsmokers)
-        chances = percent_of_nonsmokers - self.smoking_period * weight_of_smoking_period
+        chances = percent_of_nonsmokers * (1 - self.smoking_period * weight_of_smoking_period)
+        # chances = percent_of_nonsmokers - self.smoking_period * weight_of_smoking_period
         return max(chances, 0)
 
     def check_death(self, grid):
@@ -185,3 +200,20 @@ class Grid:
             person = self.filled_cells[position]
             matrix[x, y] = states[person.state]
         return matrix
+
+grid = Grid((50, 50))
+grid.random_start()
+# for i in grid.filled_cells:
+#     print(grid.filled_cells[i])
+
+# print(grid.to_matrix())
+
+matrix = grid.to_matrix()
+
+
+
+uniform_data = np.random.rand(100, 100)
+plt.figure("Smokers world")
+ax = sns.heatmap(matrix, linewidth=0.5, cmap=[
+                 "#ffffff", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b", ])
+plt.show()
