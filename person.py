@@ -7,20 +7,21 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pylab as plt
 
+# from finite_state_machine import FiniteStateMachine
+
 
 
 
 
 class Person:
-    def __init__(self, age: int, smoker: bool, smoking_period: int, smoking_parents: float, position: tuple = None,
-                 chances_to_start: float = None, chances_to_stop: float = None, chances_to_die: float = None,):
+    def __init__(self, age: int, smoker: bool, smoking_parents: float, smoking_period: int = 0, position: tuple = None):
         self.position = position
         self.age = age
         self.smoking_parents = smoking_parents
         self.smoker = smoker
-        self.chances_to_start_smoking = chances_to_start
-        self.chances_to_stop_smoking = chances_to_stop
-        self.chances_to_die = chances_to_die
+        # self.chances_to_start_smoking = chances_to_start
+        # self.chances_to_stop_smoking = chances_to_stop
+        # self.chances_to_die = chances_to_die
         self.smoking_period = smoking_period
 
         self.state = None
@@ -61,7 +62,7 @@ class Person:
                 chances = 10 * weight_of_smoking_period + (self.smoking_period - 10) * weight_of_smoking_period_pro
         return chances
 
-    def chances_to_start(self, grid):
+    def chances_to_start_smoking(self, grid):
         if self.smoking_parents:
             weight_of_smoking_parents = 2
         else:
@@ -72,7 +73,7 @@ class Person:
         chances = percent_of_smokers * self.influence_weight() * weight_of_smoking_parents
         return min(chances, 1)
 
-    def chances_to_stop(self, grid):
+    def chances_to_stop_smoking(self, grid):
         weight_of_smoking_period = 0.05
 
         smokers, nonsmokers = self.check_neighbors(grid)
@@ -83,9 +84,11 @@ class Person:
 
     def check_death(self, grid):
         random_death = random()
-        if random_death <= self.chances_to_die():
+        if random_death <= self.chances_to_die()  or self.age == 85:
             x, y = self.position
             grid.filled_cells.pop((x, y))
+            return True
+        return False
 
     def __str__(self):
         return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}, state: {self.state}'
@@ -110,9 +113,10 @@ class Person:
 
 
 class Grid:
-    def __init__(self, size: tuple):
+    def __init__(self, size: tuple, start_fill):
         self.size = size
         self.filled_cells: dict = {}
+        self.start_fill = start_fill
 
     def fill_grid(self, position, value):
         if position in self.filled_cells.keys():
@@ -125,12 +129,17 @@ class Grid:
         except KeyError:
             return False
 
-    def next_iteration(self):
+    def next_iteration(self, fsm):
+        self.to_matrix()
         for position in list(self.filled_cells.keys()):
             self.filled_cells[position].move(self)
+        for position in list(self.filled_cells.keys()):
+            person = self.filled_cells[position]
+            fsm.next(person)
 
-    def random_start(self, percent_of_people=0.5, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
-        people_count = round(self.size[0]*self.size[1]*percent_of_people)
+
+    def random_start(self, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
+        people_count = round(self.size[0]*self.size[1]*self.start_fill)
 
         children_count = round(people_count*children)
         teen_count = round(people_count*teen)
@@ -159,7 +168,7 @@ class Grid:
                 if smoker == True and age > 10:
                     smoking_period = randrange(age-10)
                 else:
-                    smoking_period = None
+                    smoking_period = 0
 
                 smoking_parents = choice([True, False])
 
@@ -182,38 +191,55 @@ class Grid:
                 else:
                     person.state = 'smoker_beginner'
             else:
-                if person.chances_to_start(self) > 0.5:
+                if person.chances_to_start_smoking(self) > 0.5:
                     person.state = 'nonsmoker_high_prob'
                 else:
                     person.state = 'nonsmoker_low_prob'
 
     def to_matrix(self):
-        states = {'died': 0,
-                  'nonsmoker_low_prob': 1,
-                  'nonsmoker_high_prob': 2,
-                  'smoker_beginner': 3,
-                  'smoker_pro': 4,
-                  'smoker_in_the_past': 5}
-        matrix = np.zeros(shape=(self.size[0], self.size[1]))
+    #     states = {'died': 0,
+    #               'nonsmoker_low_prob': 1,
+    #               'nonsmoker_high_prob': 2,
+    #               'smoker_beginner': 3,
+    #               'smoker_pro': 4,
+    #               'smoker_in_the_past': 5}
+        states = {'died': ' ',
+                  'nonsmoker_low_prob': '💛',
+                  'nonsmoker_high_prob': '🧡',
+                  'smoker_beginner': '❤️',
+                  'smoker_pro': '💜',
+                  'smoker_in_the_past': '💙'}
+        # matrix = np.zeros(shape=(self.size[0], self.size[1]))
+        # matrix = np.chararray((self.size[0], self.size[1]))
+
+        matrix = [[' ' for _ in range(self.size[0])] for _ in range(self.size[1])]
         for position in self.filled_cells:
             x, y = position
             person = self.filled_cells[position]
-            matrix[x, y] = states[person.state]
-        return matrix
+            matrix[x][y] = states[person.state]
+        for i in matrix:
+            print(i)
+        print()
+        # for position in self.filled_cells:
+        #     x, y = position
+        #     person = self.filled_cells[position]
+        #     matrix[x, y] = states[person.state]
+        
+        #return matrix
 
-grid = Grid((50, 50))
-grid.random_start()
-# for i in grid.filled_cells:
-#     print(grid.filled_cells[i])
+# grid = Grid((50, 50))
+#grid.random_start()
+# # for i in grid.filled_cells:
+# #     print(grid.filled_cells[i])
 
-# print(grid.to_matrix())
+# # print(grid.to_matrix())
 
-matrix = grid.to_matrix()
+# matrix = grid.to_matrix()
 
 
 
-uniform_data = np.random.rand(100, 100)
-plt.figure("Smokers world")
-ax = sns.heatmap(matrix, linewidth=0.5, cmap=[
-                 "#ffffff", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b", ])
-plt.show()
+# uniform_data = np.random.rand(100, 100)
+# plt.figure("Smokers world")
+# ax = sns.heatmap(matrix, linewidth=0.5, cmap=[
+#                  "#ffffff", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b", ])
+# plt.show()
