@@ -1,16 +1,12 @@
+import matplotlib.pylab as plt
+import seaborn as sns
 from random import random, randrange, randint, choice
 import numpy as np
 np.set_printoptions(threshold=np.inf)
 EMPTY_CELL = None
 
-import numpy as np
-import seaborn as sns
-import matplotlib.pylab as plt
 
 # from finite_state_machine import FiniteStateMachine
-
-
-
 
 
 class Person:
@@ -27,15 +23,26 @@ class Person:
         self.state = None
 
     def influence_weight(self):
-        if self.age < 15:
+        if self.age < 16:
             return 1.5
-        if 15 < self.age < 25:
+        if 15 < self.age < 26:
             return 1.4
-        if self.age < 55:
+        if self.age < 46:
             return 1.3
-        if self.age < 65:
+        if self.age < 66:
             return 1.2
         return 1
+
+    def get_person_age_type(self):
+        if self.age < 16:
+            return 'children'
+        if self.age < 26:
+            return 'teen'
+        if self.age < 46:
+            return 'young'
+        if self.age < 66:
+            return 'adult'
+        return 'elderly'
 
     def check_neighbors(self, grid):
         x, y = self.position
@@ -59,7 +66,8 @@ class Person:
             if self.smoking_period <= 10:
                 chances = self.smoking_period * weight_of_smoking_period
             else:
-                chances = 10 * weight_of_smoking_period + (self.smoking_period - 10) * weight_of_smoking_period_pro
+                chances = 10 * weight_of_smoking_period + \
+                    (self.smoking_period - 10) * weight_of_smoking_period_pro
         return chances
 
     def chances_to_start_smoking(self, grid):
@@ -78,13 +86,14 @@ class Person:
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_nonsmokers = nonsmokers / (smokers+nonsmokers)
-        chances = percent_of_nonsmokers * (1 - self.smoking_period * weight_of_smoking_period)
+        chances = percent_of_nonsmokers * \
+            (1 - self.smoking_period * weight_of_smoking_period)
         # chances = percent_of_nonsmokers - self.smoking_period * weight_of_smoking_period
         return max(chances, 0)
 
     def check_death(self, grid):
         random_death = random()
-        if random_death <= self.chances_to_die()  or self.age == 85:
+        if random_death <= self.chances_to_die() or self.age == 85:
             x, y = self.position
             grid.filled_cells.pop((x, y))
             return True
@@ -117,11 +126,11 @@ class Grid:
         self.size = size
         self.filled_cells: dict = {}
         self.start_fill = start_fill
-
-    def fill_grid(self, position, value):
-        if position in self.filled_cells.keys():
-            raise IndexError
-        self.filled_cells[position] = value
+        self.population_count = {'children': [0, 0],
+                                 'teen': [0, 0],
+                                 'young': [0, 0],
+                                 'adult': [0, 0],
+                                 'elderly': [0, 0]}
 
     def is_occupied(self, position):
         try:
@@ -136,7 +145,60 @@ class Grid:
         for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
             fsm.next(person)
+        self.create_children()
 
+    def create_children(self):
+        fertile_people = self.population_count['teen'][0] + \
+            self.population_count['young'][0]
+
+        fertile_smokers = self.population_count['teen'][1] + \
+            self.population_count['young'][1]
+        # print('adasdal sdasdk ahdslajh sdj a\n\n\n\n' + fertile_people)
+
+        fertile_non_smokers = fertile_people - fertile_smokers
+        if fertile_non_smokers > 0:
+            children_born_from_non_smokers = max(
+                1, round(fertile_non_smokers * 0.02))
+        else:
+            children_born_from_non_smokers = 0
+
+        if fertile_smokers > 0:
+            children_born_from_smokers = max(1, round(fertile_smokers * 0.01))
+        else:
+            children_born_from_smokers = 0
+
+        for i in range(children_born_from_non_smokers):
+            person = Person(age=0, smoker=False, smoking_parents=False)
+            while self.get_free_cells_count():
+                position = (
+                    randint(0, self.size[0]-1), randint(0, self.size[1]-1))
+                if position not in self.filled_cells:
+                    self.filled_cells[position] = person
+                    person.position = position
+                    self.population_count['children'][0] += 1
+                    break
+
+        for i in range(children_born_from_smokers):
+            person = Person(age=0, smoker=False, smoking_parents=True)
+            while self.get_free_cells_count():
+                position = (
+                    randint(0, self.size[0]-1), randint(0, self.size[1]-1))
+                if position not in self.filled_cells:
+                    self.filled_cells[position] = person
+                    person.position = position
+                    self.population_count['children'][0] += 1
+                    break
+
+    def get_total_population(self):
+        total_population = 0
+        for i in self.population_count:
+            total_population += self.population_count[i][0]
+
+        return total_population
+
+    def get_free_cells_count(self):
+        free_cells = self.size[0] * self.size[1] - self.get_total_population()
+        return free_cells
 
     def random_start(self, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
         people_count = round(self.size[0]*self.size[1]*self.start_fill)
@@ -174,6 +236,7 @@ class Grid:
 
                 new_person = Person(
                     age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
+                self.population_count[person_type][1] += 1 if smoker else 0
 
                 while True:
                     position = (
@@ -182,6 +245,7 @@ class Grid:
                         self.filled_cells[position] = new_person
                         new_person.position = position
                         break
+            self.population_count[person_type][0] = person_type[0]
 
         for position in self.filled_cells:
             person = self.filled_cells[position]
@@ -197,12 +261,12 @@ class Grid:
                     person.state = 'nonsmoker_low_prob'
 
     def to_matrix(self):
-    #     states = {'died': 0,
-    #               'nonsmoker_low_prob': 1,
-    #               'nonsmoker_high_prob': 2,
-    #               'smoker_beginner': 3,
-    #               'smoker_pro': 4,
-    #               'smoker_in_the_past': 5}
+        #     states = {'died': 0,
+        #               'nonsmoker_low_prob': 1,
+        #               'nonsmoker_high_prob': 2,
+        #               'smoker_beginner': 3,
+        #               'smoker_pro': 4,
+        #               'smoker_in_the_past': 5}
         states = {'died': ' ',
                   'nonsmoker_low_prob': '💛',
                   'nonsmoker_high_prob': '🧡',
@@ -212,7 +276,8 @@ class Grid:
         # matrix = np.zeros(shape=(self.size[0], self.size[1]))
         # matrix = np.chararray((self.size[0], self.size[1]))
 
-        matrix = [[' ' for _ in range(self.size[0])] for _ in range(self.size[1])]
+        matrix = [[' ' for _ in range(self.size[0])]
+                  for _ in range(self.size[1])]
         for position in self.filled_cells:
             x, y = position
             person = self.filled_cells[position]
@@ -224,18 +289,17 @@ class Grid:
         #     x, y = position
         #     person = self.filled_cells[position]
         #     matrix[x, y] = states[person.state]
-        
-        #return matrix
+
+        # return matrix
 
 # grid = Grid((50, 50))
-#grid.random_start()
+# grid.random_start()
 # # for i in grid.filled_cells:
 # #     print(grid.filled_cells[i])
 
 # # print(grid.to_matrix())
 
 # matrix = grid.to_matrix()
-
 
 
 # uniform_data = np.random.rand(100, 100)
