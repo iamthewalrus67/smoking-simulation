@@ -47,15 +47,16 @@ class Person:
         chances = self.smoking_period * weight_of_smoking_period
         return chances
 
-    def chances_to_start(self):
+    def chances_to_start(self, grid):
         weight_of_smoking_parents = 0.1
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_smokers = smokers / (smokers+nonsmokers)
-        chances = percent_of_smokers * self.influence_weight() + self.smoking_parents * weight_of_smoking_parents
+        chances = percent_of_smokers * self.influence_weight() + self.smoking_parents * \
+            weight_of_smoking_parents
         return min(chances, 1)
 
-    def chances_to_stop(self):
+    def chances_to_stop(self, grid):
         weight_of_smoking_period = 0.05
 
         smokers, nonsmokers = self.check_neighbors(grid)
@@ -72,6 +73,21 @@ class Person:
     def __str__(self):
         return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}'
 
+    def move(self, grid):
+        directions = [(-1, -1), (0, -1), (1, -1), (-1, 0),
+                      (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+        while True:
+            random_direction = choice(directions)
+            new_x = self.position[0] + random_direction[0]
+            new_y = self.position[1] + random_direction[1]
+            new_position = (new_x, new_y)
+            if grid.is_occupied(new_position) or new_x not in range(grid.size[0]) or new_y not in range(grid.size[1]):
+                continue
+
+            grid.filled_cells.pop(self.position)
+            self.position = new_position
+            grid.filled_cells[self.position] = self
+
 
 class Grid:
     def __init__(self, size: tuple):
@@ -79,10 +95,16 @@ class Grid:
         self.filled_cells: dict = {}
 
     def fill_grid(self, position, value):
-        if position in self.filled_cells.keys:
+        if position in self.filled_cells.keys():
             raise IndexError
         self.filled_cells[position] = value
 
+    def is_occupied(self, position):
+        return self.filled_cells[position] is not None
+
+    def next_iteration(self):
+        for position in self.filled_cells.keys():
+            self.filled_cells[position].move(self)
 
     def random_start(self, percent_of_people = 0.01, children = 0.15, teen = 0.1, young = 0.44, adult = 0.14, elderly = 0.17):
         people_count = round(self.size[0]*self.size[1]*percent_of_people)
