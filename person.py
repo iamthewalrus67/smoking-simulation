@@ -1,11 +1,11 @@
-from random import random
+from random import random, randrange, randint, choice
 
 EMPTY_CELL = None
 
 
 class Person:
-    def __init__(self, position: tuple, age: int, smoker: bool, chances_to_start: float, chances_to_stop: float,
-                 chances_to_die: float, smoking_period: int, smoking_parents: int):
+    def __init__(self, age: int, smoker: bool, smoking_period: int, smoking_parents: float, position: tuple = None, 
+    chances_to_start: float = None, chances_to_stop: float = None, chances_to_die: float = None,):
         self.position = position
         self.age = age
         self.smoking_parents = smoking_parents
@@ -68,6 +68,9 @@ class Person:
         if random_death <= self.chances_to_die:
             x, y = self.position
             grid[x, y] = EMPTY_CELL
+    
+    def __str__(self):
+        return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}'
 
 
 class Grid:
@@ -81,13 +84,54 @@ class Grid:
         self.filled_cells[position] = value
 
 
-def random_start(grid = Grid(), percent_of_people = 0.01, children = 0.15, teen = 0.1, young = 0.44, adult = 0.14, elderly = 0.17):
-    size = grid.size
-    people_count = size[0]*size[1]*percent_of_people
+    def random_start(self, percent_of_people = 0.01, children = 0.15, teen = 0.1, young = 0.44, adult = 0.14, elderly = 0.17):
+        people_count = round(self.size[0]*self.size[1]*percent_of_people)
 
-    children = round(people_count*children)
-    teen = round(people_count*teen)
-    young = round(people_count*young)
-    adult = round(people_count*adult)
-    elderly = round(people_count*elderly)
+        children_count = round(people_count*children)
+        teen_count = round(people_count*teen)
+        young_count = round(people_count*young)
+        adult_count = round(people_count*adult)
+        elderly_count = round(people_count*elderly)
+        
+        people = {'children': (children_count, [0, 14], 0),
+                    'teen': (teen_count, [15, 24], 0.187),
+                    'young': (young_count, [25, 54], 0.324),
+                    'adult': (adult_count, [55, 64], 0.229),
+                    'elderly': (elderly_count, [65, 85], 0.06)}
+        # people = [children, teen, young, adult, elderly]
 
+
+        for person_type in people:
+            for i in range(people[person_type][0]):
+                min_age, max_age = people[person_type][1]
+                age = randrange(min_age, max_age)
+
+                check_smoking = random()
+                if check_smoking <= people[person_type][2]:
+                    smoker = True
+                else:
+                    smoker = False
+
+                if smoker == True and age > 10:
+                    smoking_period = randrange(age-10)
+                else:
+                    smoking_period = None
+                
+                smoking_parents = choice([True, False])
+
+                new_person = Person(age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
+
+                while True:
+                    position = (randint(0, self.size[0]), randint(0, self.size[1]))
+                    if position not in self.filled_cells:
+                        self.filled_cells[position] = new_person
+                        new_person.position = position
+                        break
+                    else:
+                        position = (randint(0, self.size[0]), randint(0, self.size[1]))
+
+
+grid = Grid((100, 100))
+grid.random_start()
+for i in grid.filled_cells:
+    print(grid.filled_cells[i])
