@@ -1,131 +1,107 @@
-from person import Person, Grid
+from random import random
+
+# from person import Person, Grid
 
 class FiniteStateMachine:
     
-    def __init__(self):
-        self.handlers = {}
-        self.startState = None
-        self.endStates = []
+    def __init__(self, grid):
+        self.handlers = {'nonsmoker_low_prob': from_nonsmoker,
+                        'nonsmoker_high_prob': from_nonsmoker,
+                        'smoker_beginner': from_smoker_beginner,
+                        'smoker_pro': from_smoker_pro,
+                        'smoker_in_the_past': from_smoker_in_the_past}
+        # self.startState = None
+        self.endStates = ['died']
+        self.grid = grid
 
     def add_state(self, name, handler = None, end_state = False):
         self.handlers[name] = handler
         if end_state:
             self.endStates.append(name)
 
-    def set_start(self, name):
-        self.startState = name
-
-    def run(self, cargo):
-        try:
-            handler = self.handlers[self.startState]
-        except:
-            raise InitializationError("must call .set_start() before .run()")
-        if not self.endStates:
-            raise  InitializationError("at least one state must be an end_state")
+    # def set_start(self, name):
+    #     self.startState = name
     
-        while True:
-            (newState, cargo) = handler(cargo)
-            if newState.upper() in self.endStates:
-                print("reached ", newState)
-                break 
-            else:
-                handler = self.handlers[newState.upper()]
+    def next(self, person):
+        handler = self.handlers[person.state]
+        new_state = handler(person, self.grid)
+        person.state = new_state
 
-state_nonsmoker_low_prob = 'nonsmoker_low_prob'
-state_nonsmoker_high_prob = 'nonsmoker_high_prob'
-state_smoker_beginner = 'smoker_beginner'
-state_smoker_pro = 'smoker_pro'
-state_smoker_in_the_past = 'smoker_in_the_past'
-state_died = 'died'
-
-
-
-def from_nonsmoker_low_prob(person: Person):
-    pass
-
-def from_nonsmoker_high_prob(person: Person):
-    pass
-
-def from_smoker_beginner(person: Person):
-    pass
-
-def from_smoker_pro(person: Person):
-    pass
-
-def from_smoker_in_the_past(person: Person):
-    pass
-
-fsm = FiniteStateMachine()
-fsm.add_state(state_nonsmoker_low_prob, from_nonsmoker_low_prob)
-fsm.add_state(state_nonsmoker_high_prob, from_nonsmoker_high_prob)
-fsm.add_state(state_smoker_beginner, from_smoker_beginner)
-fsm.add_state(state_smoker_pro, from_smoker_pro)
-fsm.add_state(state_smoker_in_the_past, from_smoker_in_the_past)
-fsm.add_state(state_died, end_state=True)
-
-#set start
+    # def run(self, cargo):
+    #     try:
+    #         handler = self.handlers[self.startState]
+    #     except:
+    #         raise InitializationError("must call .set_start() before .run()")
+    #     if not self.endStates:
+    #         raise  InitializationError("at least one state must be an end_state")
+    
+    #     while True:
+    #         (newState, cargo) = handler(cargo)
+    #         if newState.upper() in self.endStates:
+    #             print("reached ", newState)
+    #             break 
+    #         else:
+    #             handler = self.handlers[newState.upper()]
 
 
 
-# positive_adjectives = ["great","super", "fun", "entertaining", "easy"]
-# negative_adjectives = ["boring", "difficult", "ugly", "bad"]
+def from_nonsmoker(person, grid):
+    if person.check_death(grid):
+        return 'died'
+    if person.chances_to_start_smoking(grid) < 0.5:
+        new_state = 'nonsmoker_low_prob'
+    else:
+        new_state = 'nonsmoker_high_prob'
+    random_float = random()
+    if random_float <= person.chances_to_start_smoking(grid):
+        new_state = 'smoker_beginner'
+    return new_state
 
-# def start_transitions(txt):
-#     splitted_txt = txt.split(None,1)
-#     word, txt = splitted_txt if len(splitted_txt) > 1 else (txt,"")
-#     if word == "Python":
-#         newState = "Python_state"
-#     else:
-#         newState = "error_state"
-#     return (newState, txt)
+def from_smoker_beginner(person, grid):
+    new_state = 'smoker_beginner'
+    if person.check_death(grid):
+        return 'died'
+    random_float = random()
+    if random_float <= person.chances_to_stop_smoking(grid):
+        new_state = 'smoker_in_the_past'
+    elif person.smoking_period >= 5:
+        new_state = 'smoker_pro'
+    return new_state
 
-# def python_state_transitions(txt):
-#     splitted_txt = txt.split(None,1)
-#     word, txt = splitted_txt if len(splitted_txt) > 1 else (txt,"")
-#     if word == "is":
-#         newState = "is_state"
-#     else:
-#         newState = "error_state"
-#     return (newState, txt)
+def from_smoker_pro(person, grid):
+    new_state = 'smoker_pro'
+    if person.check_death(grid):
+        return 'died'
+    random_float = random()
+    if random_float <= person.chances_to_stop_smoking(grid):
+        new_state = 'smoker_in_the_past'
+    return new_state
 
-# def is_state_transitions(txt):
-#     splitted_txt = txt.split(None,1)
-#     word, txt = splitted_txt if len(splitted_txt) > 1 else (txt,"")
-#     if word == "not":
-#         newState = "not_state"
-#     elif word in positive_adjectives:
-#         newState = "pos_state"
-#     elif word in negative_adjectives:
-#         newState = "neg_state"
-#     else:
-#         newState = "error_state"
-#     return (newState, txt)
+def from_smoker_in_the_past(person, grid):
+    new_state = 'smoker_in_the_past'
+    if person.check_death(grid):
+        return 'died'
 
-# def not_state_transitions(txt):
-#     splitted_txt = txt.split(None,1)
-#     word, txt = splitted_txt if len(splitted_txt) > 1 else (txt,"")
-#     if word in positive_adjectives:
-#         newState = "neg_state"
-#     elif word in negative_adjectives:
-#         newState = "pos_state"
-#     else:
-#         newState = "error_state"
-#     return (newState, txt)
+    random_float = random()
+    if random_float <= person.chances_to_start_smoking(grid):
+        if person.smoking_period < 5:
+            new_state = 'smoker_beginner'
+        else:
+            new_state = 'smoker_pro'
+    return new_state
 
-# def neg_state(txt):
-#     print("Hallo")
-#     return ("neg_state", "")
+# state_nonsmoker_low_prob = 'nonsmoker_low_prob'
+# state_nonsmoker_high_prob = 'nonsmoker_high_prob'
+# state_smoker_beginner = 'smoker_beginner'
+# state_smoker_pro = 'smoker_pro'
+# state_smoker_in_the_past = 'smoker_in_the_past'
+# state_died = 'died'
 
+# fsm = FiniteStateMachine()
+# fsm.add_state(state_nonsmoker_low_prob, from_nonsmoker)
+# fsm.add_state(state_nonsmoker_high_prob, from_nonsmoker)
+# fsm.add_state(state_smoker_beginner, from_smoker_beginner)
+# fsm.add_state(state_smoker_pro, from_smoker_pro)
+# fsm.add_state(state_smoker_in_the_past, from_smoker_in_the_past)
+# fsm.add_state(state_died, end_state=True)
 
-# m = StateMachine()
-# m.add_state("Start", start_transitions)
-# m.add_state("Python_state", python_state_transitions)
-# m.add_state("is_state", is_state_transitions)
-# m.add_state("not_state", not_state_transitions)
-# m.add_state("neg_state", None, end_state=1)
-# m.add_state("pos_state", None, end_state=1)
-# m.add_state("error_state", None, end_state=1)
-# m.set_start("Start")
-# m.run("Python is great")
-# m.run("Python is difficult")
-# m.run("Perl is ugly")
