@@ -49,4 +49,3 @@ class PauseAnimation:
 
 pa = PauseAnimation()
 plt.show()
-
