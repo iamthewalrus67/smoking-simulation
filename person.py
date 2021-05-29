@@ -134,25 +134,24 @@ class Grid:
 
     def is_occupied(self, position):
         try:
-            return self.filled_cells[position] is not None
+            return isinstance(self.filled_cells[position], Person)
         except KeyError:
             return False
 
     def next_iteration(self, fsm):
         self.to_matrix()
         for position in list(self.filled_cells.keys()):
-            self.filled_cells[position].move(self)
-        for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
             fsm.next(person)
+        for position in list(self.filled_cells.keys()):
+            self.filled_cells[position].move(self)
         self.create_children()
+        print(self.population_count, self.get_total_population())
+        print(len(self.filled_cells))
 
     def create_children(self):
-        fertile_people = self.population_count['teen'][0] + \
-            self.population_count['young'][0]
-
-        fertile_smokers = self.population_count['teen'][1] + \
-            self.population_count['young'][1]
+        fertile_people = self.population_count['teen'][0] + self.population_count['young'][0]
+        fertile_smokers = self.population_count['teen'][1] + self.population_count['young'][1]
         # print('adasdal sdasdk ahdslajh sdj a\n\n\n\n' + fertile_people)
 
         fertile_non_smokers = fertile_people - fertile_smokers
@@ -173,8 +172,11 @@ class Grid:
                 position = (
                     randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                 if position not in self.filled_cells:
+                    print(position)
                     self.filled_cells[position] = person
+                    print(len(self.filled_cells))
                     person.position = position
+                    person.state = 'nonsmoker_low_prob'
                     self.population_count['children'][0] += 1
                     break
 
@@ -184,8 +186,11 @@ class Grid:
                 position = (
                     randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                 if position not in self.filled_cells:
+                    print(position)
                     self.filled_cells[position] = person
+                    print(len(self.filled_cells))
                     person.position = position
+                    person.state = 'nonsmoker_low_prob'
                     self.population_count['children'][0] += 1
                     break
 
@@ -245,7 +250,7 @@ class Grid:
                         self.filled_cells[position] = new_person
                         new_person.position = position
                         break
-            self.population_count[person_type][0] = person_type[0]
+            self.population_count[person_type][0] = people[person_type][0]
 
         for position in self.filled_cells:
             person = self.filled_cells[position]
