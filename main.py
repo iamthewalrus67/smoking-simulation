@@ -3,7 +3,7 @@ from finite_state_machine import FiniteStateMachine
 from time import sleep
 
 
-grid = Grid((20, 20), 0.8)
+grid = Grid((20, 20), 0.5)
 grid.random_start()
 
 fsm = FiniteStateMachine(grid)

@@ -24,6 +24,7 @@ class FiniteStateMachine:
     #     self.startState = name
 
     def next(self, person):
+        old_state = person.state
         smoke_earlier = person.smoker
         age_group_earlier = person.get_person_age_type()
 
@@ -35,10 +36,11 @@ class FiniteStateMachine:
 
         smoke_now = person.smoker
         age_group_now = person.get_person_age_type()
+
         
-        if new_state == 'dead':
+        if new_state in self.endStates:
             self.grid.population_count[age_group_earlier][0] -= 1
-            if smoke_earlier:
+            if smoke_earlier == True:
                 self.grid.population_count[age_group_earlier][1] -= 1
 
         elif age_group_earlier == age_group_now:
@@ -59,10 +61,13 @@ class FiniteStateMachine:
 
             elif smoke_earlier == False and smoke_now == True:
                 self.grid.population_count[age_group_now][1] += 1
+        
+        # print(smoke_earlier, smoke_now, age_group_earlier, age_group_now, old_state, new_state, person.position)
 
 
 
 def from_nonsmoker(person, grid):
+    new_state = person.state
     if person.check_death(grid):
         return 'dead'
     if person.chances_to_start_smoking(grid) < 0.5:
@@ -70,17 +75,20 @@ def from_nonsmoker(person, grid):
     else:
         new_state = 'nonsmoker_high_prob'
     random_float = random()
-    if random_float <= person.chances_to_start_smoking(grid):
+    if random_float <= person.chances_to_start_smoking(grid) and person.get_person_age_type() != 'children':
+        person.smoker = True
         new_state = 'smoker_beginner'
     return new_state
 
 
 def from_smoker_beginner(person, grid):
     new_state = 'smoker_beginner'
+    person.smoking_period += 1
     if person.check_death(grid):
         return 'dead'
     random_float = random()
     if random_float <= person.chances_to_stop_smoking(grid):
+        person.smoker = False
         new_state = 'smoker_in_the_past'
     elif person.smoking_period >= 5:
         new_state = 'smoker_pro'
@@ -89,10 +97,12 @@ def from_smoker_beginner(person, grid):
 
 def from_smoker_pro(person, grid):
     new_state = 'smoker_pro'
+    person.smoking_period += 1
     if person.check_death(grid):
         return 'dead'
     random_float = random()
     if random_float <= person.chances_to_stop_smoking(grid):
+        person.smoker = False
         new_state = 'smoker_in_the_past'
     return new_state
 
@@ -105,9 +115,11 @@ def from_smoker_in_the_past(person, grid):
     random_float = random()
     if random_float <= person.chances_to_start_smoking(grid):
         if person.smoking_period < 5:
+            person.smoker = True
             new_state = 'smoker_beginner'
         else:
             new_state = 'smoker_pro'
+            person.smoker = True
     return new_state
 
 # state_nonsmoker_low_prob = 'nonsmoker_low_prob'

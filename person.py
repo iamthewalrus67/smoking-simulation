@@ -139,15 +139,18 @@ class Grid:
             return False
 
     def next_iteration(self, fsm):
-        self.to_matrix()
+        print(self.to_matrix())
+
         for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
             fsm.next(person)
-        for position in list(self.filled_cells.keys()):
-            self.filled_cells[position].move(self)
-        self.create_children()
         print(self.population_count, self.get_total_population())
         print(len(self.filled_cells))
+        for position in list(self.filled_cells.keys()):
+            self.filled_cells[position].move(self)
+
+        self.create_children()
+
 
     def create_children(self):
         fertile_people = self.population_count['teen'][0] + self.population_count['young'][0]
@@ -172,9 +175,9 @@ class Grid:
                 position = (
                     randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                 if position not in self.filled_cells:
-                    print(position)
+                    # print('create child', position)
                     self.filled_cells[position] = person
-                    print(len(self.filled_cells))
+                    # print('after creation', len(self.filled_cells))
                     person.position = position
                     person.state = 'nonsmoker_low_prob'
                     self.population_count['children'][0] += 1
@@ -186,9 +189,9 @@ class Grid:
                 position = (
                     randint(0, self.size[0]-1), randint(0, self.size[1]-1))
                 if position not in self.filled_cells:
-                    print(position)
+                    # print(position)
                     self.filled_cells[position] = person
-                    print(len(self.filled_cells))
+                    # print(len(self.filled_cells))
                     person.position = position
                     person.state = 'nonsmoker_low_prob'
                     self.population_count['children'][0] += 1
@@ -206,19 +209,19 @@ class Grid:
         return free_cells
 
     def random_start(self, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
-        people_count = round(self.size[0]*self.size[1]*self.start_fill)
+        people_count = int(self.size[0]*self.size[1]*self.start_fill)
 
-        children_count = round(people_count*children)
-        teen_count = round(people_count*teen)
-        young_count = round(people_count*young)
-        adult_count = round(people_count*adult)
-        elderly_count = round(people_count*elderly)
+        children_count = int(people_count*children)
+        teen_count = int(people_count*teen)
+        young_count = int(people_count*young)
+        adult_count = int(people_count*adult)
+        elderly_count = int(people_count*elderly)
 
-        people = {'children': (children_count, [0, 14], 0),
-                  'teen': (teen_count, [15, 24], 0.187),
-                  'young': (young_count, [25, 54], 0.324),
-                  'adult': (adult_count, [55, 64], 0.229),
-                  'elderly': (elderly_count, [65, 85], 0.06)}
+        people = {'children': (children_count, [0, 15], 0),
+                  'teen': (teen_count, [16, 25], 0.187),
+                  'young': (young_count, [26, 45], 0.324),
+                  'adult': (adult_count, [46, 65], 0.229),
+                  'elderly': (elderly_count, [66, 85], 0.06)}
         # people = [children, teen, young, adult, elderly]
 
         for person_type in people:
@@ -227,7 +230,7 @@ class Grid:
                 age = randrange(min_age, max_age)
 
                 check_smoking = random()
-                if check_smoking <= people[person_type][2]:
+                if check_smoking < people[person_type][2]:
                     smoker = True
                 else:
                     smoker = False
@@ -241,7 +244,8 @@ class Grid:
 
                 new_person = Person(
                     age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
-                self.population_count[person_type][1] += 1 if smoker else 0
+                if smoker:
+                    self.population_count[person_type][1] += 1
 
                 while True:
                     position = (
@@ -264,38 +268,40 @@ class Grid:
                     person.state = 'nonsmoker_high_prob'
                 else:
                     person.state = 'nonsmoker_low_prob'
+        
+        print(self.population_count, self.get_total_population())
+        print(len(self.filled_cells))
 
     def to_matrix(self):
-        #     states = {'died': 0,
-        #               'nonsmoker_low_prob': 1,
-        #               'nonsmoker_high_prob': 2,
-        #               'smoker_beginner': 3,
-        #               'smoker_pro': 4,
-        #               'smoker_in_the_past': 5}
-        states = {'died': ' ',
-                  'nonsmoker_low_prob': '💛',
-                  'nonsmoker_high_prob': '🧡',
-                  'smoker_beginner': '❤️',
-                  'smoker_pro': '💜',
-                  'smoker_in_the_past': '💙'}
-        # matrix = np.zeros(shape=(self.size[0], self.size[1]))
-        # matrix = np.chararray((self.size[0], self.size[1]))
+        states = {'died': 0,
+                    'nonsmoker_low_prob': 1,
+                    'nonsmoker_high_prob': 2,
+                    'smoker_beginner': 3,
+                    'smoker_pro': 4,
+                    'smoker_in_the_past': 5}
+        # states = {'died': ' ',
+        #           'nonsmoker_low_prob': '💛',
+        #           'nonsmoker_high_prob': '🧡',
+        #           'smoker_beginner': '❤️',
+        #           'smoker_pro': '💜',
+        #           'smoker_in_the_past': '💙'}
+        matrix = np.zeros(shape=(self.size[0], self.size[1]))
 
-        matrix = [[' ' for _ in range(self.size[0])]
-                  for _ in range(self.size[1])]
-        for position in self.filled_cells:
-            x, y = position
-            person = self.filled_cells[position]
-            matrix[x][y] = states[person.state]
-        for i in matrix:
-            print(i)
-        print()
+        # matrix = [[' ' for _ in range(self.size[0])]
+        #           for _ in range(self.size[1])]
         # for position in self.filled_cells:
         #     x, y = position
         #     person = self.filled_cells[position]
-        #     matrix[x, y] = states[person.state]
+        #     matrix[x][y] = states[person.state]
+        # for i in matrix:
+        #     print(i)
+        # print()
+        for position in self.filled_cells:
+            x, y = position
+            person = self.filled_cells[position]
+            matrix[x, y] = states[person.state]
 
-        # return matrix
+        return matrix
 
 # grid = Grid((50, 50))
 # grid.random_start()
