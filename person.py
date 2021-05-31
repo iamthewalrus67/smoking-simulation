@@ -144,8 +144,8 @@ class Grid:
         for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
             fsm.next(person)
-        print(self.population_count, self.get_total_population())
-        print(len(self.filled_cells))
+        # print(self.population_count, self.get_total_population())
+        # print(len(self.filled_cells))
         for position in list(self.filled_cells.keys()):
             self.filled_cells[position].move(self)
 
@@ -276,11 +276,12 @@ class Grid:
 
     def to_matrix(self):
         states = {'dead': 0,
-                    'nonsmoker_low_prob': 5,
-                    'nonsmoker_high_prob': 4,
-                    'smoker_beginner': 3,
+                    'smoker_in_the_past': 1,
                     'smoker_pro': 2,
-                    'smoker_in_the_past': 1}
+                    'smoker_beginner': 3,
+                    'nonsmoker_high_prob': 4,
+                    'nonsmoker_low_prob': 5
+                    }
         # states = {'dead': ' ',
         #           'nonsmoker_low_prob': '💛',
         #           'nonsmoker_high_prob': '🧡',
@@ -304,6 +305,17 @@ class Grid:
             matrix[x, y] = states[person.state]
 
         return matrix
+    
+    def count_states(self):
+        states_dict = {'dead': 0,
+                    'smoker_in_the_past': 0,
+                    'smoker_pro': 0,
+                    'smoker_beginner': 0,
+                    'nonsmoker_high_prob': 0,
+                    'nonsmoker_low_prob': 0}
+        for person in self.filled_cells.values():
+            states_dict[person.state] += 1
+        return list(states_dict.values())
 
 # grid = Grid((50, 50))
 # grid.random_start()
