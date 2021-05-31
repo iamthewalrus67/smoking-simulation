@@ -83,4 +83,6 @@ class PauseAnimation:
 
 
 pa = PauseAnimation()
+manager = plt.get_current_fig_manager()
+manager.full_screen_toggle()
 plt.show()
