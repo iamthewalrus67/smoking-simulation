@@ -8,7 +8,8 @@ grid.random_start()
 
 fsm = FiniteStateMachine(grid)
 
-
+arrays_lst = []
 for i in range(100):
+    arrays_lst.append(grid.to_matrix())
     grid.next_iteration(fsm)
     sleep(1)

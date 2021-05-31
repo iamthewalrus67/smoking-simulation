@@ -5,9 +5,26 @@ from matplotlib import animation
 # this is for pycharm
 # import matplotlib; matplotlib.use("TkAgg")
 
-FRAMES = 20
-INTERVAL = 1000
-arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
+FRAMES = 100
+INTERVAL = 100
+#arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
+
+from person import Grid, Person
+from finite_state_machine import FiniteStateMachine
+from time import sleep
+
+
+grid = Grid((20, 20), 0.5)
+grid.random_start()
+
+fsm = FiniteStateMachine(grid)
+
+arrays_lst = []
+arrays_lst.append(grid.to_matrix())
+for i in range(100):
+    grid.next_iteration(fsm)
+    arrays_lst.append(grid.to_matrix())
+    #sleep(1)
 
 
 def init():
@@ -15,12 +32,12 @@ def init():
 
 
 def animate(i):
-    data = arrays_lst[i]
+    data = arrays_lst[i+1]
     ax = sns.heatmap(data, square=True, cbar=False, cmap=[
         "#ededed", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b"], cbar_kws={"drawedges": True})
     ax.set(xticklabels=[], yticklabels=[])
     ax.tick_params(bottom=False, left=False)
-    ax.set_title(f"Smokers around the world. Year {i}.")
+    ax.set_title(f"Smokers around the world. Year {i+1}.")
 
 
 class PauseAnimation:
@@ -29,15 +46,15 @@ class PauseAnimation:
     def __init__(self):
         plt.rcParams.update({'font.family': 'Helvetica'})
         fig = plt.figure("Smokers world")
-        data = np.random.rand(100, 100)
+        data = arrays_lst[0]
         ax = sns.heatmap(data, square=True, cmap=[
             "#ededed", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b"], cbar_kws={"drawedges": True})
         ax.set(xticklabels=[], yticklabels=[])
         ax.tick_params(bottom=False, left=False)
         c_bar = ax.collections[0].colorbar
-        c_bar.set_ticks([0.07, 1 / 6 + 0.07, 2 / 6 + 0.07, 3 / 6 + 0.07, 4 / 6 + 0.07, 1 - 0.07])
+        c_bar.set_ticks([0.3+0.85*i for i in range(6)])
         c_bar.set_ticklabels(
-            ['Dead', 'Quit smoking', 'Senior smokers', 'Middle smokers', 'Junior smokers', 'Non-smokers'])
+            ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
 
         self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
