@@ -2,13 +2,17 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import animation
+# this is for pycharm
+# import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 20
 INTERVAL = 1000
 arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
 
+
 def init():
     return
+
 
 def animate(i):
     data = arrays_lst[i]
@@ -21,6 +25,7 @@ def animate(i):
 
 class PauseAnimation:
     year_count = 0
+
     def __init__(self):
         plt.rcParams.update({'font.family': 'Helvetica'})
         fig = plt.figure("Smokers world")
@@ -35,7 +40,8 @@ class PauseAnimation:
             ['Dead', 'Quit smoking', 'Senior smokers', 'Middle smokers', 'Junior smokers', 'Non-smokers'])
         plt.title("Smokers around the world.")
 
-        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True, interval=INTERVAL)
+        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
+                                                 interval=INTERVAL)
         self.paused = False
 
         fig.canvas.mpl_connect('button_press_event', self.toggle_pause)
@@ -46,6 +52,7 @@ class PauseAnimation:
         else:
             self.animation.pause()
         self.paused = not self.paused
+
 
 pa = PauseAnimation()
 plt.show()
