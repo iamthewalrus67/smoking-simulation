@@ -35,6 +35,11 @@ def read_from_file(file_name):
     return grid, percent_people, percent_smokers
 
 
+for i in count_states_list:
+    for j in range(len(i)):
+        if i[j] < 100:
+            i[j] = str(i[j]).zfill(3)
+
 
 def init():
     return
@@ -47,9 +52,19 @@ def animate(i):
     ax.set(xticklabels=[], yticklabels=[])
     ax.tick_params(bottom=False, left=False)
     ax.set_title(f"Smokers around the world. Year {i + 1}.")
+    ax.text(-12, 1.5, f'Non-smokers_low: {count_states_list[i][5]}',
+            bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
+    ax.text(-12, 4.5, f'Non-smokers_high: {count_states_list[i][4]}',
+            bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
+    ax.text(-12, 7.5, f'Junior smokers: {count_states_list[i][3]}',
+            bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
+    ax.text(-12, 10.5, f'Senior smokers: {count_states_list[i][2]}',
+            bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
+    ax.text(-12, 13.5, f'Quit smoking: {count_states_list[i][1]}',
+            bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
 
 
-class PauseAnimation:
+class SmokingAnimation:
     year_count = 0
 
     def __init__(self):
@@ -63,22 +78,10 @@ class PauseAnimation:
         c_bar = ax.collections[0].colorbar
         c_bar.set_ticks([0.3 + 0.85 * i for i in range(6)])
         c_bar.set_ticklabels(
-            ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
+            ['None', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
-        ax.text(-12, 1.5, 'Non-smokers_low: ',
-                bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 4.5, 'Non-smokers_high: ',
-                bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 7.5, 'Junior smokers: ',
-                bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 10.5, 'Senior smokers: ',
-                bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 13.5, 'Quit smoking: ',
-                bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 16.5, 'Nobody: ',
-                bbox={'facecolor': "#ededed", 'alpha': 1, 'pad': 10})
 
-        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
+        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=False,
                                                  interval=INTERVAL)
         self.paused = False
 
