@@ -5,12 +5,13 @@ from matplotlib import animation
 from person import Grid, Person
 from finite_state_machine import FiniteStateMachine
 from time import sleep
+from matplotlib.backend_bases import MouseButton
 
 # this is for pycharm
 import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 100
-INTERVAL = 100
+INTERVAL = 1
 # arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
 
 
@@ -80,13 +81,6 @@ class PauseAnimation:
         self.paused = False
 
         fig.canvas.mpl_connect('button_press_event', self.toggle_pause)
-
-    def toggle_pause(self, *args, **kwargs):
-        if self.paused:
-            self.animation.resume()
-        else:
-            self.animation.pause()
-        self.paused = not self.paused
 
 
 pa = PauseAnimation()
