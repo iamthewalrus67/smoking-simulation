@@ -33,6 +33,7 @@ for i in count_states_list:
         if i[j] < 100:
             i[j] = str(i[j]).zfill(3)
 
+
 def init():
     return
 
@@ -56,7 +57,7 @@ def animate(i):
             bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
 
 
-class PauseAnimation:
+class SmokingAnimation:
     year_count = 0
 
     def __init__(self):
@@ -70,7 +71,7 @@ class PauseAnimation:
         c_bar = ax.collections[0].colorbar
         c_bar.set_ticks([0.3 + 0.85 * i for i in range(6)])
         c_bar.set_ticklabels(
-            ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
+            ['None', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
 
         self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=False,
@@ -87,7 +88,19 @@ class PauseAnimation:
         self.paused = not self.paused
 
 
-pa = PauseAnimation()
+def statistic_window():
+    np.random.seed(19680801)
+    data = np.random.randn(2, 100)
+
+    fig, axs = plt.subplots(2, 2, figsize=(5, 5))
+    axs[0, 0].hist(data[0])
+
+
+pa = SmokingAnimation()
+manager = plt.get_current_fig_manager()
+manager.full_screen_toggle()
+plt.show()
+statistic_window()
 manager = plt.get_current_fig_manager()
 manager.full_screen_toggle()
 plt.show()
