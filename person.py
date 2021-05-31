@@ -139,7 +139,7 @@ class Grid:
             return False
 
     def next_iteration(self, fsm):
-        print(self.to_matrix())
+        # print(self.to_matrix())
 
         for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
@@ -150,6 +150,8 @@ class Grid:
             self.filled_cells[position].move(self)
 
         self.create_children()
+
+        #return self.to_matrix()
 
 
     def create_children(self):
@@ -273,13 +275,13 @@ class Grid:
         print(len(self.filled_cells))
 
     def to_matrix(self):
-        states = {'died': 0,
-                    'nonsmoker_low_prob': 1,
-                    'nonsmoker_high_prob': 2,
+        states = {'dead': 0,
+                    'nonsmoker_low_prob': 5,
+                    'nonsmoker_high_prob': 4,
                     'smoker_beginner': 3,
-                    'smoker_pro': 4,
-                    'smoker_in_the_past': 5}
-        # states = {'died': ' ',
+                    'smoker_pro': 2,
+                    'smoker_in_the_past': 1}
+        # states = {'dead': ' ',
         #           'nonsmoker_low_prob': '💛',
         #           'nonsmoker_high_prob': '🧡',
         #           'smoker_beginner': '❤️',
