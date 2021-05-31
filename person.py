@@ -21,17 +21,17 @@ class Person:
         self.smoking_period = smoking_period
 
         self.state = None
-
-    def influence_weight(self):
+        
+    def influence_weight(self, people_influence):
         if self.age < 16:
-            return 1.5
+            return people_influence[0]
         if 15 < self.age < 26:
-            return 1.4
+            return people_influence[1]
         if self.age < 46:
-            return 1.3
+            return people_influence[2]
         if self.age < 66:
-            return 1.2
-        return 1
+            return people_influence[3]
+        return people_influence[4]
 
     def get_person_age_type(self):
         if self.age < 16:
@@ -57,11 +57,11 @@ class Person:
                         nonsmokers += 1
         return smokers, nonsmokers
 
-    def chances_to_die(self):
-        chances = 0.01
+    def chances_to_die(self, grid):
+        chances = grid.chances_to_die
 
-        weight_of_smoking_period = 0.005
-        weight_of_smoking_period_pro = 0.01
+        weight_of_smoking_period = grid.weight_of_smoking_year_die[0]
+        weight_of_smoking_period_pro = grid.weight_of_smoking_year_die[1]
         if self.smoking_period:
             if self.state != 'smoker_pro':
                 chances = self.smoking_period * weight_of_smoking_period
@@ -72,18 +72,17 @@ class Person:
 
     def chances_to_start_smoking(self, grid):
         if self.smoking_parents:
-            weight_of_smoking_parents = 2
+            weight_of_smoking_parents = grid.weight_of_smoking_parents
         else:
             weight_of_smoking_parents = 1
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_smokers = smokers / (smokers+nonsmokers)
-        chances = percent_of_smokers * self.influence_weight() * \
-            weight_of_smoking_parents * 0.75
+        chances = percent_of_smokers * self.influence_weight(grid.people_influence) * weight_of_smoking_parents
         return min(chances, 1)
 
     def chances_to_stop_smoking(self, grid):
-        weight_of_smoking_period = 0.05
+        weight_of_smoking_period = grid.weight_of_smoking_year_stop
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_nonsmokers = nonsmokers / (smokers+nonsmokers)
@@ -94,7 +93,7 @@ class Person:
 
     def check_death(self, grid):
         random_death = random()
-        if random_death <= self.chances_to_die() or self.age == 85:
+        if random_death <= self.chances_to_die(grid) or self.age == 85:
             x, y = self.position
             grid.filled_cells.pop((x, y))
             return True
@@ -123,7 +122,7 @@ class Person:
 
 
 class Grid:
-    def __init__(self, size: tuple, start_fill):
+    def __init__(self, size: tuple, start_fill, people_influence, weight_of_smoking_parents, weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die):
         self.size = size
         self.filled_cells: dict = {}
         self.start_fill = start_fill
@@ -132,6 +131,11 @@ class Grid:
                                  'young': [0, 0],
                                  'adult': [0, 0],
                                  'elderly': [0, 0]}
+        self.people_influence = people_influence
+        self.weight_of_smoking_parents = weight_of_smoking_parents
+        self.weight_of_smoking_year_stop = weight_of_smoking_year_stop
+        self.chances_to_die = chances_to_die
+        self.weight_of_smoking_year_die = weight_of_smoking_year_die
 
     def is_occupied(self, position):
         try:
@@ -212,20 +216,20 @@ class Grid:
         free_cells = self.size[0] * self.size[1] - self.get_total_population()
         return free_cells
 
-    def random_start(self, children=0.16, teen=0.1, young=0.3, adult=0.27, elderly=0.17):
+    def random_start(self, percent_people = [0.16, 0.1, 0.3, 0.27, 0.17], percent_smokers=[0, 0.187, 0.324, 0.229, 0.06]):
         people_count = int(self.size[0]*self.size[1]*self.start_fill)
 
-        children_count = int(people_count*children)
-        teen_count = int(people_count*teen)
-        young_count = int(people_count*young)
-        adult_count = int(people_count*adult)
-        elderly_count = int(people_count*elderly)
+        children_count = int(people_count*percent_people[0])
+        teen_count = int(people_count*percent_people[1])
+        young_count = int(people_count*percent_people[2])
+        adult_count = int(people_count*percent_people[3])
+        elderly_count = int(people_count*percent_people[4])
 
-        people = {'children': (children_count, [0, 15], 0),
-                  'teen': (teen_count, [16, 25], 0.187),
-                  'young': (young_count, [26, 45], 0.324),
-                  'adult': (adult_count, [46, 65], 0.229),
-                  'elderly': (elderly_count, [66, 85], 0.06)}
+        people = {'children': (children_count, [0, 15], percent_smokers[0]),
+                  'teen': (teen_count, [16, 25], percent_smokers[1]),
+                  'young': (young_count, [26, 45], percent_smokers[2]),
+                  'adult': (adult_count, [46, 65], percent_smokers[3]),
+                  'elderly': (elderly_count, [66, 85], percent_smokers[4])}
         # people = [children, teen, young, adult, elderly]
 
         for person_type in people:
@@ -308,15 +312,20 @@ class Grid:
 
         return matrix
 
-    def count_states(self):
+    def count_states(self, age_group=None):
         states_dict = {'dead': 0,
-                       'smoker_in_the_past': 0,
-                       'smoker_pro': 0,
-                       'smoker_beginner': 0,
-                       'nonsmoker_high_prob': 0,
-                       'nonsmoker_low_prob': 0}
-        for person in self.filled_cells.values():
-            states_dict[person.state] += 1
+                    'smoker_in_the_past': 0,
+                    'smoker_pro': 0,
+                    'smoker_beginner': 0,
+                    'nonsmoker_high_prob': 0,
+                    'nonsmoker_low_prob': 0}
+        if age_group is None:
+            for person in self.filled_cells.values():
+                states_dict[person.state] += 1
+        else:
+            for person in self.filled_cells.values():
+                if person.get_person_age_type() == age_group:
+                    states_dict[person.state] += 1     
         return list(states_dict.values())
 
 # grid = Grid((50, 50))

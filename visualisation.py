@@ -4,29 +4,36 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from person import Grid, Person
 from finite_state_machine import FiniteStateMachine
-from time import sleep
 
 # this is for pycharm
 # import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 100
 INTERVAL = 100
-# arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
+
+def read_from_file(file_name):
+    with open(file_name) as f:
+        data = f.readlines()
+
+        size = [int(i) for i in data.pop(0).split()]
+        start_fill = float(data.pop(0))
+
+        percent_people = [float(i) for i in data.pop(0).split()]
+        percent_smokers = [float(i) for i in data.pop(0).split()]
+        people_influence = [float(i) for i in data.pop(0).split()]
+        #
+        chances_to_die = float(data.pop(0))
+        weight_of_smoking_year_die = [float(i) for i in data.pop(0).split()]
+
+        weight_of_smoking_parents = float(data.pop(0))
+
+        weight_of_smoking_year_stop = float(data.pop(0))
 
 
-grid = Grid((20, 20), 0.5)
-grid.random_start()
+    grid = Grid(size, start_fill, people_influence, weight_of_smoking_parents, \
+        weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die)
+    return grid, percent_people, percent_smokers
 
-fsm = FiniteStateMachine(grid)
-
-arrays_lst = [grid.to_matrix()]
-count_states_list = [grid.count_states()]
-for i in range(100):
-    grid.next_iteration(fsm)
-    arrays_lst.append(grid.to_matrix())
-    count_states_list.append(grid.count_states())
-    # print(count_states_list[i])
-    # sleep(1)
 
 for i in count_states_list:
     for j in range(len(i)):
@@ -88,19 +95,25 @@ class SmokingAnimation:
         self.paused = not self.paused
 
 
-def statistic_window():
-    np.random.seed(19680801)
-    data = np.random.randn(2, 100)
+if __name__ == '__main__':
+    file_name = '1.txt'
+    grid, percent_people, percent_smokers = read_from_file(file_name)
+    grid.random_start(percent_people, percent_smokers)
+    fsm = FiniteStateMachine(grid)
 
-    fig, axs = plt.subplots(2, 2, figsize=(5, 5))
-    axs[0, 0].hist(data[0])
+    arrays_lst = [grid.to_matrix()]
+    count_states_list = [grid.count_states()]
+    count_teen = [grid.count_states('teen')]
+    count_young = [grid.count_states('young')]
+    count_adult = [grid.count_states('adult')]
+    count_elderly = [grid.count_states('elderly')]
 
+    for i in range(100):
+        grid.next_iteration(fsm)
+        arrays_lst.append(grid.to_matrix())
+        count_states_list.append(grid.count_states())
 
-pa = SmokingAnimation()
-manager = plt.get_current_fig_manager()
-manager.full_screen_toggle()
-plt.show()
-statistic_window()
-manager = plt.get_current_fig_manager()
-manager.full_screen_toggle()
-plt.show()
+    pa = PauseAnimation()
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+    plt.show()
