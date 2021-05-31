@@ -2,6 +2,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import animation
+from person import Grid, Person
+from finite_state_machine import FiniteStateMachine
+from time import sleep
 
 # this is for pycharm
 # import matplotlib; matplotlib.use("TkAgg")
@@ -10,17 +13,13 @@ FRAMES = 100
 INTERVAL = 100
 # arrays_lst = [np.random.rand(100, 100) for _ in range(FRAMES)]
 
-from person import Grid, Person
-from finite_state_machine import FiniteStateMachine
-from time import sleep
 
 grid = Grid((20, 20), 0.5)
 grid.random_start()
 
 fsm = FiniteStateMachine(grid)
 
-arrays_lst = []
-arrays_lst.append(grid.to_matrix())
+arrays_lst = [grid.to_matrix()]
 for i in range(100):
     grid.next_iteration(fsm)
     arrays_lst.append(grid.to_matrix())
@@ -56,6 +55,18 @@ class PauseAnimation:
         c_bar.set_ticklabels(
             ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
+        ax.text(-12, 1.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 4.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 7.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 10.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 13.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 18.5, 'boxed italics text in data coords', style='italic',
+                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
 
         self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
                                                  interval=INTERVAL)
