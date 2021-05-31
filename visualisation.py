@@ -100,6 +100,11 @@ if __name__ == '__main__':
 
     arrays_lst = [grid.to_matrix()]
     count_states_list = [grid.count_states()]
+    count_teen = [grid.count_states('teen')]
+    count_young = [grid.count_states('young')]
+    count_adult = [grid.count_states('adult')]
+    count_elderly = [grid.count_states('elderly')]
+
     for i in range(100):
         grid.next_iteration(fsm)
         arrays_lst.append(grid.to_matrix())

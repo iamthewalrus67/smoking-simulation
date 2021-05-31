@@ -311,15 +311,20 @@ class Grid:
 
         return matrix
     
-    def count_states(self):
+    def count_states(self, age_group=None):
         states_dict = {'dead': 0,
                     'smoker_in_the_past': 0,
                     'smoker_pro': 0,
                     'smoker_beginner': 0,
                     'nonsmoker_high_prob': 0,
                     'nonsmoker_low_prob': 0}
-        for person in self.filled_cells.values():
-            states_dict[person.state] += 1
+        if age_group is None:
+            for person in self.filled_cells.values():
+                states_dict[person.state] += 1
+        else:
+            for person in self.filled_cells.values():
+                if person.get_person_age_type() == age_group:
+                    states_dict[person.state] += 1     
         return list(states_dict.values())
 
 # grid = Grid((50, 50))
