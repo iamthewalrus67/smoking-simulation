@@ -20,9 +20,12 @@ grid.random_start()
 fsm = FiniteStateMachine(grid)
 
 arrays_lst = [grid.to_matrix()]
+count_states_list = [grid.count_states()]
 for i in range(100):
     grid.next_iteration(fsm)
     arrays_lst.append(grid.to_matrix())
+    count_states_list.append(grid.count_states())
+    # print(count_states_list[i])
     # sleep(1)
 
 
