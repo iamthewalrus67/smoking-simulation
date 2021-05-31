@@ -58,16 +58,16 @@ class Person:
         return smokers, nonsmokers
 
     def chances_to_die(self):
-        chances = 0.03
+        chances = 0.01
 
-        weight_of_smoking_period = 0.01
-        weight_of_smoking_period_pro = 0.02
+        weight_of_smoking_period = 0.005
+        weight_of_smoking_period_pro = 0.01
         if self.smoking_period:
-            if self.smoking_period <= 10:
+            if self.state != 'smoker_pro':
                 chances = self.smoking_period * weight_of_smoking_period
             else:
-                chances = 10 * weight_of_smoking_period + \
-                    (self.smoking_period - 10) * weight_of_smoking_period_pro
+                chances = 5 * weight_of_smoking_period + \
+                    (self.smoking_period - 5) * weight_of_smoking_period_pro
         return chances
 
     def chances_to_start_smoking(self, grid):
@@ -78,7 +78,8 @@ class Person:
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_smokers = smokers / (smokers+nonsmokers)
-        chances = percent_of_smokers * self.influence_weight() * weight_of_smoking_parents
+        chances = percent_of_smokers * self.influence_weight() * \
+            weight_of_smoking_parents * 0.75
         return min(chances, 1)
 
     def chances_to_stop_smoking(self, grid):
@@ -144,19 +145,20 @@ class Grid:
         for position in list(self.filled_cells.keys()):
             person = self.filled_cells[position]
             fsm.next(person)
-        print(self.population_count, self.get_total_population())
-        print(len(self.filled_cells))
+        # print(self.population_count, self.get_total_population())
+        # print(len(self.filled_cells))
         for position in list(self.filled_cells.keys()):
             self.filled_cells[position].move(self)
 
         self.create_children()
 
-        #return self.to_matrix()
-
+        # return self.to_matrix()
 
     def create_children(self):
-        fertile_people = self.population_count['teen'][0] + self.population_count['young'][0]
-        fertile_smokers = self.population_count['teen'][1] + self.population_count['young'][1]
+        fertile_people = self.population_count['teen'][0] + \
+            self.population_count['young'][0]
+        fertile_smokers = self.population_count['teen'][1] + \
+            self.population_count['young'][1]
         # print('adasdal sdasdk ahdslajh sdj a\n\n\n\n' + fertile_people)
 
         fertile_non_smokers = fertile_people - fertile_smokers
@@ -270,17 +272,18 @@ class Grid:
                     person.state = 'nonsmoker_high_prob'
                 else:
                     person.state = 'nonsmoker_low_prob'
-        
+
         print(self.population_count, self.get_total_population())
         print(len(self.filled_cells))
 
     def to_matrix(self):
         states = {'dead': 0,
-                    'nonsmoker_low_prob': 5,
-                    'nonsmoker_high_prob': 4,
-                    'smoker_beginner': 3,
-                    'smoker_pro': 2,
-                    'smoker_in_the_past': 1}
+                  'smoker_in_the_past': 1,
+                  'smoker_pro': 2,
+                  'smoker_beginner': 3,
+                  'nonsmoker_high_prob': 4,
+                  'nonsmoker_low_prob': 5
+                  }
         # states = {'dead': ' ',
         #           'nonsmoker_low_prob': '💛',
         #           'nonsmoker_high_prob': '🧡',
@@ -304,6 +307,17 @@ class Grid:
             matrix[x, y] = states[person.state]
 
         return matrix
+
+    def count_states(self):
+        states_dict = {'dead': 0,
+                       'smoker_in_the_past': 0,
+                       'smoker_pro': 0,
+                       'smoker_beginner': 0,
+                       'nonsmoker_high_prob': 0,
+                       'nonsmoker_low_prob': 0}
+        for person in self.filled_cells.values():
+            states_dict[person.state] += 1
+        return list(states_dict.values())
 
 # grid = Grid((50, 50))
 # grid.random_start()
