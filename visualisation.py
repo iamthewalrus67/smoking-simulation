@@ -55,18 +55,18 @@ class PauseAnimation:
         c_bar.set_ticklabels(
             ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
-        ax.text(-12, 1.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        ax.text(-12, 4.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        ax.text(-12, 7.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        ax.text(-12, 10.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        ax.text(-12, 13.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
-        ax.text(-12, 18.5, 'boxed italics text in data coords', style='italic',
-                bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+        ax.text(-12, 1.5, 'Non-smokers_low: ',
+                bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
+        ax.text(-12, 4.5, 'Non-smokers_high: ',
+                bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
+        ax.text(-12, 7.5, 'Junior smokers: ',
+                bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
+        ax.text(-12, 10.5, 'Senior smokers: ',
+                bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
+        ax.text(-12, 13.5, 'Quit smoking: ',
+                bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
+        ax.text(-12, 16.5, 'Nobody: ',
+                bbox={'facecolor': "#ededed", 'alpha': 1, 'pad': 10})
 
         self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
                                                  interval=INTERVAL)
