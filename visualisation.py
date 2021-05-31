@@ -7,7 +7,7 @@ from finite_state_machine import FiniteStateMachine
 from time import sleep
 
 # this is for pycharm
-import matplotlib; matplotlib.use("TkAgg")
+# import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 100
 INTERVAL = 100
@@ -54,8 +54,6 @@ def animate(i):
             bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
     ax.text(-12, 13.5, f'Quit smoking: {count_states_list[i][1]}',
             bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 16.5, f'Nobody: {count_states_list[i][0]}',
-            bbox={'facecolor': "#ededed", 'alpha': 1, 'pad': 10})
 
 
 class PauseAnimation:
@@ -75,7 +73,7 @@ class PauseAnimation:
             ['Nobody', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
         plt.title("Smokers around the world.")
 
-        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=True,
+        self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=False,
                                                  interval=INTERVAL)
         self.paused = False
 
