@@ -7,7 +7,7 @@ from finite_state_machine import FiniteStateMachine
 from time import sleep
 
 # this is for pycharm
-# import matplotlib; matplotlib.use("TkAgg")
+import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 100
 INTERVAL = 100
@@ -28,6 +28,10 @@ for i in range(100):
     # print(count_states_list[i])
     # sleep(1)
 
+for i in count_states_list:
+    for j in range(len(i)):
+        if i[j] < 100:
+            i[j] = str(i[j]).zfill(3)
 
 def init():
     return
@@ -40,17 +44,17 @@ def animate(i):
     ax.set(xticklabels=[], yticklabels=[])
     ax.tick_params(bottom=False, left=False)
     ax.set_title(f"Smokers around the world. Year {i + 1}.")
-    ax.text(-12, 1.5, 'Non-smokers_low: ',
+    ax.text(-12, 1.5, f'Non-smokers_low: {count_states_list[i][5]}',
             bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 4.5, 'Non-smokers_high: ',
+    ax.text(-12, 4.5, f'Non-smokers_high: {count_states_list[i][4]}',
             bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 7.5, 'Junior smokers: ',
+    ax.text(-12, 7.5, f'Junior smokers: {count_states_list[i][3]}',
             bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 10.5, 'Senior smokers: ',
+    ax.text(-12, 10.5, f'Senior smokers: {count_states_list[i][2]}',
             bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 13.5, 'Quit smoking: ',
+    ax.text(-12, 13.5, f'Quit smoking: {count_states_list[i][1]}',
             bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
-    ax.text(-12, 16.5, 'Nobody: ',
+    ax.text(-12, 16.5, f'Nobody: {count_states_list[i][0]}',
             bbox={'facecolor': "#ededed", 'alpha': 1, 'pad': 10})
 
 
