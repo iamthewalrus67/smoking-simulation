@@ -90,7 +90,7 @@ def from_smoker_beginner(person, grid):
     if random_float <= person.chances_to_stop_smoking(grid):
         person.smoker = False
         new_state = 'smoker_in_the_past'
-    elif person.smoking_period >= 5:
+    elif person.smoking_period >= 10:
         new_state = 'smoker_pro'
     return new_state
 
@@ -114,7 +114,7 @@ def from_smoker_in_the_past(person, grid):
 
     random_float = random()
     if random_float <= person.chances_to_start_smoking(grid):
-        if person.smoking_period < 5:
+        if person.smoking_period < 10:
             person.smoker = True
             new_state = 'smoker_beginner'
         else:

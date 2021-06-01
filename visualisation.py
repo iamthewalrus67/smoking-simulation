@@ -133,7 +133,7 @@ def statistic_window(teen, young, adult, elderly):
 
 
 if __name__ == '__main__':
-    file_name = '4.txt'
+    file_name = 'smoking_room.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
     fsm = FiniteStateMachine(grid)
