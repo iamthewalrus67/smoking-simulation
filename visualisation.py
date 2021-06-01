@@ -6,7 +6,7 @@ from person import Grid, Person
 from finite_state_machine import FiniteStateMachine
 
 # this is for pycharm
-# import matplotlib; matplotlib.use("TkAgg")
+import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 100
 INTERVAL = 100
@@ -33,12 +33,6 @@ def read_from_file(file_name):
     grid = Grid(size, start_fill, people_influence, weight_of_smoking_parents,
                 weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die)
     return grid, percent_people, percent_smokers
-
-
-# for i in count_states_list:
-#     for j in range(len(i)):
-#         if i[j] < 100:
-#             i[j] = str(i[j]).zfill(3)
 
 
 def init():
@@ -107,26 +101,26 @@ class SmokingAnimation:
         self.paused = not self.paused
 
 
-# def statistic_window(teen, young, adult, elderly):
-#
-#     # create data
-#     x = [1, 2, 3]
-#     y = [4, 5, 6]
-#
-#     # plot lines
-#     # plt.plot(x, y, label="line 1")
-#     # plt.plot(y, x, label="line 2")
-#     # plt.plot(x, np.sin(x), label="curve 1")
-#     # plt.plot(x, np.cos(x), label="curve 2")
-#
-#     figure, axes = plt.subplots(nrows=2, ncols=2)
-#     axes[0, 0].plot(x, y)
-#     axes[0, 0].plot(y, x)
-#     axes[0, 0].plot(x, np.sin(x))
-#     axes[0, 0].plot(x, np.cos(x))
-#     axes[0, 1].plot(x, y)
-#     axes[1, 0].plot(x, y)
-#     axes[1, 1].plot(x, y)
+def statistic_window(teen, young, adult, elderly):
+
+    # create data
+    x = [1, 2, 3]
+    y = [4, 5, 6]
+
+    # plot lines
+    # plt.plot(x, y, label="line 1")
+    # plt.plot(y, x, label="line 2")
+    # plt.plot(x, np.sin(x), label="curve 1")
+    # plt.plot(x, np.cos(x), label="curve 2")
+
+    figure, axes = plt.subplots(nrows=2, ncols=2)
+    axes[0, 0].plot(x, y)
+    axes[0, 0].plot(y, x)
+    axes[0, 0].plot(x, np.sin(x))
+    axes[0, 0].plot(x, np.cos(x))
+    axes[0, 1].plot(x, y)
+    axes[1, 0].plot(x, y)
+    axes[1, 1].plot(x, y)
 
 
 if __name__ == '__main__':
@@ -142,6 +136,11 @@ if __name__ == '__main__':
     count_adult = [grid.count_states('adult')]
     count_elderly = [grid.count_states('elderly')]
 
+    for i in count_states_list:
+        for j in range(len(i)):
+            if i[j] < 100:
+                i[j] = str(i[j]).zfill(3)
+
     for i in range(100):
         grid.next_iteration(fsm)
         arrays_lst.append(grid.to_matrix())
@@ -150,7 +149,6 @@ if __name__ == '__main__':
         count_young.append(grid.count_states('young'))
         count_adult.append(grid.count_states('adult'))
         count_elderly.append(grid.count_states('elderly'))
-    print(count_states_list)
 
     pa = SmokingAnimation()
     manager = plt.get_current_fig_manager()
@@ -159,5 +157,5 @@ if __name__ == '__main__':
     # statistic_window(count_teen, count_young, count_adult, count_elderly)
     # manager = plt.get_current_fig_manager()
     # manager.full_screen_toggle()
-
+    #
     # plt.show()
