@@ -30,8 +30,11 @@ def read_from_file(file_name):
 
         weight_of_smoking_year_stop = float(data.pop(0))
 
+        fertile_percent_non_smokers, fertile_percent_smokers = [float(i) for i in data.pop(0).split()]
+
     grid = Grid(size, start_fill, people_influence, weight_of_smoking_parents,
-                weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die)
+                weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die,
+                fertile_percent_non_smokers, fertile_percent_smokers)
     return grid, percent_people, percent_smokers
 
 
@@ -130,7 +133,7 @@ def statistic_window(teen, young, adult, elderly):
 
 
 if __name__ == '__main__':
-    file_name = '1.txt'
+    file_name = '4.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
     fsm = FiniteStateMachine(grid)

@@ -7,3 +7,4 @@ chances_to_die
 weight_of_smoking_year_die [light, pro]
 weight_of_smoking_parents
 weight_of_smoking_year_stop
+fertile_percent_non_smokers, fertile_percent_smokers
