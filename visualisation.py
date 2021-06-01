@@ -46,7 +46,7 @@ def animate(i):
     ax.set(xticklabels=[], yticklabels=[])
     ax.tick_params(bottom=False, left=False)
     ax.set_title(f"Smokers around the world. Year {i + 1}.")
-    ax.text(-5.1, 1.5, f'{count_states_list[i][5]}')
+    # ax.text(-5.1, 1.5, f'{count_states_list[i][5]}')
     # ax.text(-12, 1.5, f'Non-smokers_low: {count_states_list[i][5]}',
     #         bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
     # ax.text(-12, 4.5, f'Non-smokers_high: {count_states_list[i][4]}',
@@ -102,25 +102,31 @@ class SmokingAnimation:
 
 
 def statistic_window(teen, young, adult, elderly):
+    y = list(range(101))
 
-    # create data
-    x = [1, 2, 3]
-    y = [4, 5, 6]
-
-    # plot lines
-    # plt.plot(x, y, label="line 1")
-    # plt.plot(y, x, label="line 2")
-    # plt.plot(x, np.sin(x), label="curve 1")
-    # plt.plot(x, np.cos(x), label="curve 2")
+    def category_data(category, k, h):
+        quit_smoking = []
+        senior_smokers = []
+        junior_smokers = []
+        non_smoker_high = []
+        non_smokers_low = []
+        for year in category:  # quit_smoking, senior_smokers, junior_smokers, non_smoker_high, non_smokers_low
+            quit_smoking.append(year[0])
+            senior_smokers.append(year[1])
+            junior_smokers.append(year[2])
+            non_smoker_high.append(year[3])
+            non_smokers_low.append(year[4])
+        axes[k, h].plot(y, quit_smoking)
+        axes[k, h].plot(y, senior_smokers)
+        axes[k, h].plot(y, junior_smokers)
+        axes[k, h].plot(y, non_smoker_high)
+        axes[k, h].plot(y, non_smokers_low)
 
     figure, axes = plt.subplots(nrows=2, ncols=2)
-    axes[0, 0].plot(x, y)
-    axes[0, 0].plot(y, x)
-    axes[0, 0].plot(x, np.sin(x))
-    axes[0, 0].plot(x, np.cos(x))
-    axes[0, 1].plot(x, y)
-    axes[1, 0].plot(x, y)
-    axes[1, 1].plot(x, y)
+    category_data(teen, 0, 0)
+    category_data(young, 1, 0)
+    category_data(adult, 0, 1)
+    category_data(elderly, 1, 1)
 
 
 if __name__ == '__main__':
@@ -149,13 +155,12 @@ if __name__ == '__main__':
         count_young.append(grid.count_states('young'))
         count_adult.append(grid.count_states('adult'))
         count_elderly.append(grid.count_states('elderly'))
-
     pa = SmokingAnimation()
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
     plt.show()
-    # statistic_window(count_teen, count_young, count_adult, count_elderly)
-    # manager = plt.get_current_fig_manager()
-    # manager.full_screen_toggle()
-    #
-    # plt.show()
+    statistic_window(count_teen, count_young, count_adult, count_elderly)
+    manager = plt.get_current_fig_manager()
+    manager.full_screen_toggle()
+
+    plt.show()
