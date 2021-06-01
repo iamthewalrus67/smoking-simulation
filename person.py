@@ -122,7 +122,9 @@ class Person:
 
 
 class Grid:
-    def __init__(self, size: tuple, start_fill, people_influence, weight_of_smoking_parents, weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die):
+    def __init__(self, size: tuple, start_fill, people_influence, weight_of_smoking_parents, \
+        weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die, \
+            fertile_percent_non_smokers, fertile_percent_smokers):
         self.size = size
         self.filled_cells: dict = {}
         self.start_fill = start_fill
@@ -136,6 +138,8 @@ class Grid:
         self.weight_of_smoking_year_stop = weight_of_smoking_year_stop
         self.chances_to_die = chances_to_die
         self.weight_of_smoking_year_die = weight_of_smoking_year_die
+        self.fertile_percent_non_smokers = fertile_percent_non_smokers
+        self.fertile_percent_smokers = fertile_percent_smokers
 
     def is_occupied(self, position):
         try:
@@ -168,12 +172,12 @@ class Grid:
         fertile_non_smokers = fertile_people - fertile_smokers
         if fertile_non_smokers > 0:
             children_born_from_non_smokers = max(
-                1, round(fertile_non_smokers * 0.02))
+                1, round(fertile_non_smokers * self.fertile_percent_non_smokers))
         else:
             children_born_from_non_smokers = 0
 
         if fertile_smokers > 0:
-            children_born_from_smokers = max(1, round(fertile_smokers * 0.01))
+            children_born_from_smokers = max(1, round(fertile_smokers * self.fertile_percent_smokers))
         else:
             children_born_from_smokers = 0
 
