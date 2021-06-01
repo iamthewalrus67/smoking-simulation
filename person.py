@@ -313,8 +313,7 @@ class Grid:
         return matrix
 
     def count_states(self, age_group=None):
-        states_dict = {'dead': 0,
-                    'smoker_in_the_past': 0,
+        states_dict = {'smoker_in_the_past': 0,
                     'smoker_pro': 0,
                     'smoker_beginner': 0,
                     'nonsmoker_high_prob': 0,

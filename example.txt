@@ -1,0 +1,9 @@
+size_x size_y
+start_fill
+percent_people [children, teen, young, adult, elderly]
+percent_smokers [children, teen, young, adult, elderly]
+people_influence [children, teen, young, adult, elderly]
+chances_to_die
+weight_of_smoking_year_die [light, pro]
+weight_of_smoking_parents
+weight_of_smoking_year_stop
