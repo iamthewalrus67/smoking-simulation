@@ -1,4 +1,4 @@
-<img src="img/cigarette.png" align="right" />
+<img src="img/cigarette.png" align="right" width=200 />
 
 # Smoking Simulation
 
