@@ -46,4 +46,4 @@ The project was developed by:
 * Roman Kulyk
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)
