@@ -15,9 +15,11 @@ The main engine of the project is finite state machine algorithms that run the l
 
 The simulation process looks like this:
 
+![Simulation](img/1.png)
 
 When the simulation is over, you can watch statistics plots representing data collected during simulation
 
+![Result](img/2.png)
 
 ## Usage
 
@@ -39,11 +41,11 @@ Please make sure to update tests as appropriate.
 ## Authors and acknowledgment
 
 The project was developed by:
-* Karyna Volokhatiuk
-* Oleksandra Stasiuk
-* Vira Salieva
-* Bohdan Ruban
-* Roman Kulyk
+* [Karyna Volokhatiuk](https://github.com/karyna-volokhatiuk)
+* [Oleksandra Stasiuk](https://github.com/oleksadobush)
+* [Vira Salieva](https://github.com/vsaliievaa)
+* [Bohdan Ruban](https://github.com/iamthewalrus67)
+* [Roman Kulyk](https://github.com/kkulykk)
 
 ## License
 [MIT](LICENSE)
