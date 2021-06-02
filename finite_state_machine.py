@@ -1,9 +1,17 @@
 from random import random
 
-# from person import Person, Grid
-
 
 class FiniteStateMachine:
+    '''
+    Represents finite state machine with states:
+        'nonsmoker_low_prob'
+        'nonsmoker_high_prob'
+        'smoker_beginner'
+        'smoker_pro'
+        'smoker_in_the_past'
+        'dead'
+    'dead' is the end state
+    '''
 
     def __init__(self, grid):
         self.handlers = {'nonsmoker_low_prob': from_nonsmoker,
@@ -11,33 +19,26 @@ class FiniteStateMachine:
                          'smoker_beginner': from_smoker_beginner,
                          'smoker_pro': from_smoker_pro,
                          'smoker_in_the_past': from_smoker_in_the_past}
-        # self.startState = None
         self.endStates = ['dead']
         self.grid = grid
 
-    def add_state(self, name, handler=None, end_state=False):
-        self.handlers[name] = handler
-        if end_state:
-            self.endStates.append(name)
-
-    # def set_start(self, name):
-    #     self.startState = name
-
     def next(self, person):
-        old_state = person.state
+        '''
+        Change the person's parameters after 1 year of life.
+        '''
         smoke_earlier = person.smoker
         age_group_earlier = person.get_person_age_type()
 
         person.age += 1
 
         handler = self.handlers[person.state]
+
         new_state = handler(person, self.grid)
         person.state = new_state
 
         smoke_now = person.smoker
         age_group_now = person.get_person_age_type()
 
-        
         if new_state in self.endStates:
             self.grid.population_count[age_group_earlier][0] -= 1
             if smoke_earlier == True:
@@ -61,12 +62,13 @@ class FiniteStateMachine:
 
             elif smoke_earlier == False and smoke_now == True:
                 self.grid.population_count[age_group_now][1] += 1
-        
-        # print(smoke_earlier, smoke_now, age_group_earlier, age_group_now, old_state, new_state, person.position)
-
 
 
 def from_nonsmoker(person, grid):
+    '''
+    Return the new state of nonsmoker
+    after 1 year of life.
+    '''
     new_state = person.state
     if person.check_death(grid):
         return 'dead'
@@ -82,6 +84,10 @@ def from_nonsmoker(person, grid):
 
 
 def from_smoker_beginner(person, grid):
+    '''
+    Return the new state of smoker_beginner
+    after 1 year of life.
+    '''
     new_state = 'smoker_beginner'
     person.smoking_period += 1
     if person.check_death(grid):
@@ -96,6 +102,10 @@ def from_smoker_beginner(person, grid):
 
 
 def from_smoker_pro(person, grid):
+    '''
+    Return the new state of smoker_pro
+    after 1 year of life.
+    '''
     new_state = 'smoker_pro'
     person.smoking_period += 1
     if person.check_death(grid):
@@ -108,6 +118,10 @@ def from_smoker_pro(person, grid):
 
 
 def from_smoker_in_the_past(person, grid):
+    '''
+    Return the new state of smoker_in_the_past
+    after 1 year of life.
+    '''
     new_state = 'smoker_in_the_past'
     if person.check_death(grid):
         return 'dead'
@@ -121,18 +135,3 @@ def from_smoker_in_the_past(person, grid):
             new_state = 'smoker_pro'
             person.smoker = True
     return new_state
-
-# state_nonsmoker_low_prob = 'nonsmoker_low_prob'
-# state_nonsmoker_high_prob = 'nonsmoker_high_prob'
-# state_smoker_beginner = 'smoker_beginner'
-# state_smoker_pro = 'smoker_pro'
-# state_smoker_in_the_past = 'smoker_in_the_past'
-# state_dead = 'dead'
-
-# fsm = FiniteStateMachine()
-# fsm.add_state(state_nonsmoker_low_prob, from_nonsmoker)
-# fsm.add_state(state_nonsmoker_high_prob, from_nonsmoker)
-# fsm.add_state(state_smoker_beginner, from_smoker_beginner)
-# fsm.add_state(state_smoker_pro, from_smoker_pro)
-# fsm.add_state(state_smoker_in_the_past, from_smoker_in_the_past)
-# fsm.add_state(state_dead, end_state=True)
