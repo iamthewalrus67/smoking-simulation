@@ -1,3 +1,5 @@
+<img src="img/cigarette.png" align="right" />
+
 # Smoking Simulation
 
 Smoking Simulation is an app to simulate the spreading of smokers and non-smokers, their interactions and population during certain amount of time.
