@@ -81,7 +81,7 @@ def animate(i):
 
 class SmokingAnimation:
     """
-    Class to represent animation during simulation
+    Class to represent animation during simulation.
     """
     year_count = 0
 
