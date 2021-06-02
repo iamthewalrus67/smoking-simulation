@@ -4,7 +4,9 @@ from random import random, choice
 class Person:
     '''
     Represents people who can be in one of six states:
-    'Quit smoking' - smoked earlier but now does not (Romanus since 15.06.2021)
+    'Quit smoking' - smoked earlier but now does not (Yarosalv Romanus since 15.06.2021,
+                                                    Bodya Hlovatskyi since 01.06.2021,
+                                                    Volodya Fedynyak since [choose your date])
     'Senior smoker' - smokes more than 10 years
     'Junior smoker' - smokes less than 10 years
     'Non-smoker_high' - does not smoke but has many chances to start
