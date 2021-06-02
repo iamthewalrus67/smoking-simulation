@@ -41,11 +41,11 @@ Please make sure to update tests as appropriate.
 ## Authors and acknowledgment
 
 The project was developed by:
-* Karyna Volokhatiuk
-* Oleksandra Stasiuk
-* Vira Salieva
-* Bohdan Ruban
-* Roman Kulyk
+* [Karyna Volokhatiuk](https://github.com/karyna-volokhatiuk)
+* [Oleksandra Stasiuk](https://github.com/oleksadobush)
+* [Vira Salieva](https://github.com/vsaliievaa)
+* [Bohdan Ruban](https://github.com/iamthewalrus67)
+* [Roman Kulyk](https://github.com/kkulykk)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
