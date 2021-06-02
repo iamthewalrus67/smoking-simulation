@@ -1,21 +1,18 @@
-import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import animation
-from person import Person
 from grid import Grid
 from finite_state_machine import FiniteStateMachine
 
-# this is for pycharm
-import matplotlib
-# matplotlib.use("TkAgg")
+# uncomment this is for pycharm
+# import matplotlib; matplotlib.use("TkAgg")
 
 FRAMES = 50
 INTERVAL = 100
 
 
 def read_from_file(file_name):
-    '''
+    """
     Read all needed coefficients and statisatical
     data from file and return grid based on this data
     and statistical data (percent of every age group
@@ -25,7 +22,7 @@ def read_from_file(file_name):
     Needed format of file is descibed in data\example.txt.
 
     Examples of files for reading are in the folder 'data'.
-    '''
+    """
     with open(file_name) as f:
         data = f.readlines()
 
@@ -59,9 +56,9 @@ def init():
 
 
 def animate(i):
-    '''
+    """
     Build a new state of smokers
-    '''
+    """
     data = arrays_lst[i + 1]
     ax = sns.heatmap(data, square=True, cbar=False, cmap=[
         "#ededed", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b"], cbar_kws={"drawedges": True})
@@ -70,22 +67,22 @@ def animate(i):
     ax.set_title(f"Smokers around the world. Year {i + 1}.")
     # ax.text(-5.1, 1.5, f'{count_states_list[i][5]}')
     x = 5
-    ax.text(-40, 2*x, f'Non-smokers_low: {count_states_list[i][4]}',
+    ax.text(-40, 2 * x, f'Non-smokers_low: {count_states_list[i][4]}',
             bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-    ax.text(-40, 3*x+5, f'Non-smokers_high: {count_states_list[i][3]}',
+    ax.text(-40, 3 * x + 5, f'Non-smokers_high: {count_states_list[i][3]}',
             bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-    ax.text(-40, 4*x+10, f'Junior smokers: {count_states_list[i][2]}',
+    ax.text(-40, 4 * x + 10, f'Junior smokers: {count_states_list[i][2]}',
             bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-    ax.text(-40, 5*x+15, f'Senior smokers: {count_states_list[i][1]}',
+    ax.text(-40, 5 * x + 15, f'Senior smokers: {count_states_list[i][1]}',
             bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-    ax.text(-40, 6*x+20, f'Quit smoking: {count_states_list[i][0]}',
+    ax.text(-40, 6 * x + 20, f'Quit smoking: {count_states_list[i][0]}',
             bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
 
 
 class SmokingAnimation:
-    '''
+    """
     Class to represent animation during simulation
-    '''
+    """
     year_count = 0
 
     def __init__(self):
@@ -93,17 +90,6 @@ class SmokingAnimation:
         data = arrays_lst[0]
         ax = sns.heatmap(data, square=True, cmap=[
             "#ededed", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b"], cbar_kws={"drawedges": True})
-        # ax.text(-5.1, 1.5, '')
-        # ax.text(-12, 1.5, f'Non-smokers_low:         ',
-        #         bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-        # ax.text(-12, 4.5, f'Non-smokers_high:         ',
-        #         bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-        # ax.text(-12, 7.5, f'Junior smokers:         ',
-        #         bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-        # ax.text(-12, 10.5, f'Senior smokers:          ',
-        #         bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-        # ax.text(-12, 13.5, f'Quit smoking:         ',
-        #         bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
         ax.set(xticklabels=[], yticklabels=[])
         ax.tick_params(bottom=False, left=False)
         c_bar = ax.collections[0].colorbar
@@ -127,11 +113,11 @@ class SmokingAnimation:
 
 
 def statistic_window(teen, young, adult, elderly):
-    '''
+    """
     Open new window with 4 different plots representing
     statistics gathered during simulation
-    '''
-    y = list(range(101))
+    """
+    y = list(range(51))
 
     def category_data(category, k, h):
         quit_smoking = []
@@ -139,7 +125,7 @@ def statistic_window(teen, young, adult, elderly):
         junior_smokers = []
         non_smoker_high = []
         non_smokers_low = []
-        for year in category:  # quit_smoking, senior_smokers, junior_smokers, non_smoker_high, non_smokers_low
+        for year in category:
             quit_smoking.append(year[0])
             senior_smokers.append(year[1])
             junior_smokers.append(year[2])
@@ -150,18 +136,30 @@ def statistic_window(teen, young, adult, elderly):
         axes[k, h].plot(y, senior_smokers, label="Senior smokers")
         axes[k, h].plot(y, non_smoker_high, label="Non-smokers (high)")
         axes[k, h].plot(y, non_smokers_low, label="Non-smokers (low)")
+
     figure, axes = plt.subplots(nrows=2, ncols=2)
+
+    plt.suptitle('Result of simulation', fontsize=30)
+
+    axes[0, 0].set_title("Teen", fontsize=20)
+    axes[0, 1].set_title("Young", fontsize=20)
+    axes[1, 0].set_title("Adult", fontsize=20)
+    axes[1, 1].set_title("Elderly", fontsize=20)
     category_data(teen, 0, 0)
     plt.figlegend(loc="lower center", ncol=5)
-    plt.get_current_fig_manager().canvas.set_window_title('Results of simulation')
-    category_data(young, 1, 0)
-    category_data(adult, 0, 1)
+
+    category_data(young, 0, 1)
+    category_data(adult, 1, 0)
     category_data(elderly, 1, 1)
+
+    plt.setp(axes[1, :], xlabel='years of living')
+    plt.setp(axes[1, :], ylabel='number of people')
+    plt.setp(axes[0, :], ylabel='number of people')
 
 
 if __name__ == '__main__':
     # read needed data from file and fill the grid with people
-    file_name = 'data/sidegrid70x70.txt'
+    file_name = 'data/grid70x70.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
 
@@ -171,18 +169,14 @@ if __name__ == '__main__':
     # create lists for giving data to visualisation
     arrays_lst = [grid.to_matrix()]
     count_states_list = [grid.count_states()]
+
     count_teen = [grid.count_states('teen')]
     count_young = [grid.count_states('young')]
     count_adult = [grid.count_states('adult')]
     count_elderly = [grid.count_states('elderly')]
 
-    for i in count_states_list:
-        for j in range(len(i)):
-            if i[j] < 100:
-                i[j] = str(i[j]).zfill(3)
-
     # add info about 100 years on the grid to lists
-    for i in range(100):
+    for i in range(50):
         grid.next_iteration(fsm)
         arrays_lst.append(grid.to_matrix())
         count_states_list.append(grid.count_states())
@@ -190,6 +184,11 @@ if __name__ == '__main__':
         count_young.append(grid.count_states('young'))
         count_adult.append(grid.count_states('adult'))
         count_elderly.append(grid.count_states('elderly'))
+
+    for i in count_states_list:
+        for j in range(len(i)):
+            if i[j] < 1000:
+                i[j] = str(i[j]).zfill(4)
 
     pa = SmokingAnimation()
     manager = plt.get_current_fig_manager()
@@ -199,4 +198,5 @@ if __name__ == '__main__':
     statistic_window(count_teen, count_young, count_adult, count_elderly)
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
+
     plt.show()
