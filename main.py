@@ -158,7 +158,7 @@ def statistic_window(teen, young, adult, elderly):
     category_data(adult, 1, 0)
     category_data(elderly, 1, 1)
 
-    plt.setp(axes[1, :], xlabel='years of living')
+    plt.setp(axes[1, :], xlabel='years of simulation')
     plt.setp(axes[1, :], ylabel='number of people')
     plt.setp(axes[0, :], ylabel='number of people')
 
