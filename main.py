@@ -139,7 +139,7 @@ def statistic_window(teen, young, adult, elderly):
 
     figure, axes = plt.subplots(nrows=2, ncols=2)
 
-    plt.suptitle('Result of simulation', fontsize=30)
+    plt.suptitle('Results of simulation', fontsize=30)
 
     axes[0, 0].set_title("Teen", fontsize=20)
     axes[0, 1].set_title("Young", fontsize=20)
@@ -193,6 +193,7 @@ if __name__ == '__main__':
     pa = SmokingAnimation()
     manager = plt.get_current_fig_manager()
     manager.full_screen_toggle()
+
     plt.show()
 
     statistic_window(count_teen, count_young, count_adult, count_elderly)
