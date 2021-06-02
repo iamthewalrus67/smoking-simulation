@@ -1,28 +1,29 @@
-import matplotlib.pylab as plt
-import seaborn as sns
-from random import random, randrange, randint, choice
-import numpy as np
-np.set_printoptions(threshold=np.inf)
-EMPTY_CELL = None
-
-
-# from finite_state_machine import FiniteStateMachine
+from random import random, choice
 
 
 class Person:
-    def __init__(self, age: int, smoker: bool, smoking_parents: float, smoking_period: int = 0, position: tuple = None):
+    '''
+    Represents people who can be in one of six states:
+    'Quit smoking' - smoked earlier but now does not (Romanus since 15.06.2021)
+    'Senior smoker' - smokes more than 10 years
+    'Junior smoker' - smokes less than 10 years
+    'Non-smoker_high' - does not smoke but has many chances to start
+    'Non-smoker_low' - does not smoke and has little chance to start
+    '''
+
+    def __init__(self, age: int, smoker: bool, smoking_parents: bool, smoking_period: int = 0, position: tuple = None):
         self.position = position
         self.age = age
         self.smoking_parents = smoking_parents
         self.smoker = smoker
-        # self.chances_to_start_smoking = chances_to_start
-        # self.chances_to_stop_smoking = chances_to_stop
-        # self.chances_to_die = chances_to_die
         self.smoking_period = smoking_period
-
         self.state = None
-        
+
     def influence_weight(self, people_influence):
+        '''
+        Return a coefficient how much surrounding
+        influence on person depending on his age.
+        '''
         if self.age < 16:
             return people_influence[0]
         if 15 < self.age < 26:
@@ -34,6 +35,10 @@ class Person:
         return people_influence[4]
 
     def get_person_age_type(self):
+        '''
+        Return the name of age group
+        depending on the person age.
+        '''
         if self.age < 16:
             return 'children'
         if self.age < 26:
@@ -45,6 +50,13 @@ class Person:
         return 'elderly'
 
     def check_neighbors(self, grid):
+        '''
+        Return tuple where the first element is
+        the number of smokers around the person,
+        the second one - the number of nonsmokers
+        around the person in the square 3x3, where
+        the person is in the centre.
+        '''
         x, y = self.position
         smokers = 0
         nonsmokers = 0
@@ -58,6 +70,14 @@ class Person:
         return smokers, nonsmokers
 
     def chances_to_die(self, grid):
+        '''
+        Return the constant value if the person
+        is not a smoker and the higher one if he is.
+        Chances depends on how many years the person
+        smokes. If the person smokes more than 10 years,
+        every new year has more influence than first 10
+        years.
+        '''
         chances = grid.chances_to_die
 
         weight_of_smoking_period = grid.weight_of_smoking_year_die[0]
@@ -66,11 +86,17 @@ class Person:
             if self.state != 'smoker_pro':
                 chances = self.smoking_period * weight_of_smoking_period
             else:
-                chances = 5 * weight_of_smoking_period + \
-                    (self.smoking_period - 5) * weight_of_smoking_period_pro
+                chances = 10 * weight_of_smoking_period + \
+                    (self.smoking_period - 10) * weight_of_smoking_period_pro
         return chances
 
     def chances_to_start_smoking(self, grid):
+        '''
+        Return float between 0 and 1 that means
+        chances of person to start smoking depending on
+        the surrounding and the fact if his parents were
+        smokers.
+        '''
         if self.smoking_parents:
             weight_of_smoking_parents = grid.weight_of_smoking_parents
         else:
@@ -78,31 +104,49 @@ class Person:
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_smokers = smokers / (smokers+nonsmokers)
-        chances = percent_of_smokers * self.influence_weight(grid.people_influence) * weight_of_smoking_parents
+        chances = percent_of_smokers * \
+            self.influence_weight(grid.people_influence) * \
+            weight_of_smoking_parents
         return min(chances, 1)
 
     def chances_to_stop_smoking(self, grid):
+        '''
+        Return float between 0 and 1 that means
+        chances of person to stop smoking depending on
+        the surrounding and the period how long he smokes.
+        '''
         weight_of_smoking_period = grid.weight_of_smoking_year_stop
 
         smokers, nonsmokers = self.check_neighbors(grid)
         percent_of_nonsmokers = nonsmokers / (smokers+nonsmokers)
         chances = percent_of_nonsmokers * \
             (1 - self.smoking_period * weight_of_smoking_period)
-        # chances = percent_of_nonsmokers - self.smoking_period * weight_of_smoking_period
         return max(chances, 0)
 
     def check_death(self, grid):
+        '''
+        Return True if the person has dead.
+        '''
         random_death = random()
-        if random_death <= self.chances_to_die(grid) or self.age == 85:
+        if random_death <= self.chances_to_die(grid):
             x, y = self.position
             grid.filled_cells.pop((x, y))
             return True
         return False
 
     def __str__(self):
-        return f'Position: {self.position}, age: {self.age}, smoker: {self.smoker}, smoking_period: {self.smoking_period}, smoking_parents: {self.smoking_parents}, state: {self.state}'
+        '''
+        Return info about the person.
+        '''
+        return f'Position: {self.position}, age: {self.age}, \
+smoker: {self.smoker}, smoking_period: {self.smoking_period}, \
+smoking_parents: {self.smoking_parents}, state: {self.state}'
 
     def move(self, grid):
+        '''
+        Move the person to the new cell from the square 3x3, where
+        he is in the centre for now.
+        '''
         directions = [(-1, -1), (0, -1), (1, -1), (-1, 0),
                       (0, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
         while True:
@@ -119,230 +163,3 @@ class Person:
             self.position = new_position
             grid.filled_cells[self.position] = self
             break
-
-
-class Grid:
-    def __init__(self, size: tuple, start_fill, people_influence, weight_of_smoking_parents, \
-        weight_of_smoking_year_stop, chances_to_die, weight_of_smoking_year_die, \
-            fertile_percent_non_smokers, fertile_percent_smokers):
-        self.size = size
-        self.filled_cells: dict = {}
-        self.start_fill = start_fill
-        self.population_count = {'children': [0, 0],
-                                 'teen': [0, 0],
-                                 'young': [0, 0],
-                                 'adult': [0, 0],
-                                 'elderly': [0, 0]}
-        self.people_influence = people_influence
-        self.weight_of_smoking_parents = weight_of_smoking_parents
-        self.weight_of_smoking_year_stop = weight_of_smoking_year_stop
-        self.chances_to_die = chances_to_die
-        self.weight_of_smoking_year_die = weight_of_smoking_year_die
-        self.fertile_percent_non_smokers = fertile_percent_non_smokers
-        self.fertile_percent_smokers = fertile_percent_smokers
-
-    def is_occupied(self, position):
-        try:
-            return isinstance(self.filled_cells[position], Person)
-        except KeyError:
-            return False
-
-    def next_iteration(self, fsm):
-        # print(self.to_matrix())
-
-        for position in list(self.filled_cells.keys()):
-            person = self.filled_cells[position]
-            fsm.next(person)
-        # print(self.population_count, self.get_total_population())
-        # print(len(self.filled_cells))
-        for position in list(self.filled_cells.keys()):
-            self.filled_cells[position].move(self)
-
-        self.create_children()
-
-        # return self.to_matrix()
-
-    def create_children(self):
-        fertile_people = self.population_count['teen'][0] + \
-            self.population_count['young'][0]
-        fertile_smokers = self.population_count['teen'][1] + \
-            self.population_count['young'][1]
-        # print('adasdal sdasdk ahdslajh sdj a\n\n\n\n' + fertile_people)
-
-        fertile_non_smokers = fertile_people - fertile_smokers
-        if fertile_non_smokers > 0:
-            children_born_from_non_smokers = max(
-                1, round(fertile_non_smokers * self.fertile_percent_non_smokers))
-        else:
-            children_born_from_non_smokers = 0
-
-        if fertile_smokers > 0:
-            children_born_from_smokers = max(1, round(fertile_smokers * self.fertile_percent_smokers))
-        else:
-            children_born_from_smokers = 0
-
-        for i in range(children_born_from_non_smokers):
-            person = Person(age=0, smoker=False, smoking_parents=False)
-            while self.get_free_cells_count():
-                position = (
-                    randint(0, self.size[0]-1), randint(0, self.size[1]-1))
-                if position not in self.filled_cells:
-                    # print('create child', position)
-                    self.filled_cells[position] = person
-                    # print('after creation', len(self.filled_cells))
-                    person.position = position
-                    person.state = 'nonsmoker_low_prob'
-                    self.population_count['children'][0] += 1
-                    break
-
-        for i in range(children_born_from_smokers):
-            person = Person(age=0, smoker=False, smoking_parents=True)
-            while self.get_free_cells_count():
-                position = (
-                    randint(0, self.size[0]-1), randint(0, self.size[1]-1))
-                if position not in self.filled_cells:
-                    # print(position)
-                    self.filled_cells[position] = person
-                    # print(len(self.filled_cells))
-                    person.position = position
-                    person.state = 'nonsmoker_low_prob'
-                    self.population_count['children'][0] += 1
-                    break
-
-    def get_total_population(self):
-        total_population = 0
-        for i in self.population_count:
-            total_population += self.population_count[i][0]
-
-        return total_population
-
-    def get_free_cells_count(self):
-        free_cells = self.size[0] * self.size[1] - self.get_total_population()
-        return free_cells
-
-    def random_start(self, percent_people = [0.16, 0.1, 0.3, 0.27, 0.17], percent_smokers=[0, 0.187, 0.324, 0.229, 0.06]):
-        people_count = int(self.size[0]*self.size[1]*self.start_fill)
-
-        children_count = int(people_count*percent_people[0])
-        teen_count = int(people_count*percent_people[1])
-        young_count = int(people_count*percent_people[2])
-        adult_count = int(people_count*percent_people[3])
-        elderly_count = int(people_count*percent_people[4])
-
-        people = {'children': (children_count, [0, 15], percent_smokers[0]),
-                  'teen': (teen_count, [16, 25], percent_smokers[1]),
-                  'young': (young_count, [26, 45], percent_smokers[2]),
-                  'adult': (adult_count, [46, 65], percent_smokers[3]),
-                  'elderly': (elderly_count, [66, 85], percent_smokers[4])}
-        # people = [children, teen, young, adult, elderly]
-
-        for person_type in people:
-            for i in range(people[person_type][0]):
-                min_age, max_age = people[person_type][1]
-                age = randrange(min_age, max_age)
-
-                check_smoking = random()
-                if check_smoking < people[person_type][2]:
-                    smoker = True
-                else:
-                    smoker = False
-
-                if smoker == True and age > 10:
-                    smoking_period = randrange(age-10)
-                else:
-                    smoking_period = 0
-
-                smoking_parents = choice([True, False])
-
-                new_person = Person(
-                    age=age, smoker=smoker, smoking_parents=smoking_parents, smoking_period=smoking_period)
-                if smoker:
-                    self.population_count[person_type][1] += 1
-
-                while True:
-                    position = (
-                        randint(0, self.size[0]-1), randint(0, self.size[1]-1))
-                    if position not in self.filled_cells:
-                        self.filled_cells[position] = new_person
-                        new_person.position = position
-                        break
-            self.population_count[person_type][0] = people[person_type][0]
-
-        for position in self.filled_cells:
-            person = self.filled_cells[position]
-            if person.smoker == True:
-                if person.smoking_period >= 5:
-                    person.state = 'smoker_pro'
-                else:
-                    person.state = 'smoker_beginner'
-            else:
-                if person.chances_to_start_smoking(self) > 0.5:
-                    person.state = 'nonsmoker_high_prob'
-                else:
-                    person.state = 'nonsmoker_low_prob'
-
-        print(self.population_count, self.get_total_population())
-        print(len(self.filled_cells))
-
-    def to_matrix(self):
-        states = {'dead': 0,
-                  'smoker_in_the_past': 1,
-                  'smoker_pro': 2,
-                  'smoker_beginner': 3,
-                  'nonsmoker_high_prob': 4,
-                  'nonsmoker_low_prob': 5
-                  }
-        # states = {'dead': ' ',
-        #           'nonsmoker_low_prob': '💛',
-        #           'nonsmoker_high_prob': '🧡',
-        #           'smoker_beginner': '❤️',
-        #           'smoker_pro': '💜',
-        #           'smoker_in_the_past': '💙'}
-        matrix = np.zeros(shape=(self.size[0], self.size[1]))
-
-        # matrix = [[' ' for _ in range(self.size[0])]
-        #           for _ in range(self.size[1])]
-        # for position in self.filled_cells:
-        #     x, y = position
-        #     person = self.filled_cells[position]
-        #     matrix[x][y] = states[person.state]
-        # for i in matrix:
-        #     print(i)
-        # print()
-        for position in self.filled_cells:
-            x, y = position
-            person = self.filled_cells[position]
-            matrix[x, y] = states[person.state]
-
-        return matrix
-
-    def count_states(self, age_group=None):
-        states_dict = {'smoker_in_the_past': 0,
-                    'smoker_pro': 0,
-                    'smoker_beginner': 0,
-                    'nonsmoker_high_prob': 0,
-                    'nonsmoker_low_prob': 0}
-        if age_group is None:
-            for person in self.filled_cells.values():
-                states_dict[person.state] += 1
-        else:
-            for person in self.filled_cells.values():
-                if person.get_person_age_type() == age_group:
-                    states_dict[person.state] += 1     
-        return list(states_dict.values())
-
-# grid = Grid((50, 50))
-# grid.random_start()
-# # for i in grid.filled_cells:
-# #     print(grid.filled_cells[i])
-
-# # print(grid.to_matrix())
-
-# matrix = grid.to_matrix()
-
-
-# uniform_data = np.random.rand(100, 100)
-# plt.figure("Smokers world")
-# ax = sns.heatmap(matrix, linewidth=0.5, cmap=[
-#                  "#ffffff", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b", ])
-# plt.show()
