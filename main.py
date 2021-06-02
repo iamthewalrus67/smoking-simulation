@@ -81,7 +81,7 @@ def animate(i):
 
 class SmokingAnimation:
     """
-    Class to represent animation during simulation
+    Class to represent animation during simulation.
     """
     year_count = 0
 
@@ -105,6 +105,9 @@ class SmokingAnimation:
         fig.canvas.mpl_connect('button_press_event', self.toggle_pause)
 
     def toggle_pause(self, *args, **kwargs):
+        """
+        A helper function for pausing the animation.
+        """
         if self.paused:
             self.animation.resume()
         else:
@@ -120,6 +123,9 @@ def statistic_window(teen, young, adult, elderly):
     y = list(range(51))
 
     def category_data(category, k, h):
+        """
+        A helper function to draw subplots in animation.
+        """
         quit_smoking = []
         senior_smokers = []
         junior_smokers = []
