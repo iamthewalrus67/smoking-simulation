@@ -8,7 +8,7 @@ from finite_state_machine import FiniteStateMachine
 
 # this is for pycharm
 import matplotlib
-matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 
 FRAMES = 50
 INTERVAL = 100
@@ -60,6 +60,7 @@ def init():
 
 def animate(i):
     '''
+    Build a new state of smokers
     '''
     data = arrays_lst[i + 1]
     ax = sns.heatmap(data, square=True, cbar=False, cmap=[
@@ -83,11 +84,11 @@ def animate(i):
 
 class SmokingAnimation:
     '''
+    Class to represent animation during simulation
     '''
     year_count = 0
 
     def __init__(self):
-        # plt.rcParams.update({'font.family': 'Helvetica'})
         fig = plt.figure("Smokers world")
         data = arrays_lst[0]
         ax = sns.heatmap(data, square=True, cmap=[
@@ -108,7 +109,7 @@ class SmokingAnimation:
         c_bar = ax.collections[0].colorbar
         c_bar.set_ticks([0.3 + 0.85 * i for i in range(6)])
         c_bar.set_ticklabels(
-            ['None', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers_high', 'Non-smokers_low'])
+            ['None', 'Quit smoking', 'Senior smokers', 'Junior smokers', 'Non-smokers (high)', 'Non-smokers (low)'])
         plt.title("Smokers around the world.")
 
         self.animation = animation.FuncAnimation(fig, animate, init_func=init, frames=FRAMES, repeat=False,
@@ -127,6 +128,8 @@ class SmokingAnimation:
 
 def statistic_window(teen, young, adult, elderly):
     '''
+    Open new window with 4 different plots representing
+    statistics gathered during simulation
     '''
     y = list(range(101))
 
@@ -142,15 +145,15 @@ def statistic_window(teen, young, adult, elderly):
             junior_smokers.append(year[2])
             non_smoker_high.append(year[3])
             non_smokers_low.append(year[4])
-        axes[k, h].plot(y, quit_smoking, label="quit_smoking")
-        axes[k, h].plot(y, senior_smokers, label="senior_smokers")
-        axes[k, h].plot(y, junior_smokers, label="junior_smokers")
-        axes[k, h].plot(y, non_smoker_high, label="non_smoker_high")
-        axes[k, h].plot(y, non_smokers_low, label="non_smokers_low")
-
+        axes[k, h].plot(y, quit_smoking, label="Quit smoking")
+        axes[k, h].plot(y, junior_smokers, label="Junior smokers")
+        axes[k, h].plot(y, senior_smokers, label="Senior smokers")
+        axes[k, h].plot(y, non_smoker_high, label="Non-smokers (high)")
+        axes[k, h].plot(y, non_smokers_low, label="Non-smokers (low)")
     figure, axes = plt.subplots(nrows=2, ncols=2)
     category_data(teen, 0, 0)
-    plt.figlegend(loc="upper center", ncol=5)
+    plt.figlegend(loc="lower center", ncol=5)
+    plt.get_current_fig_manager().canvas.set_window_title('Results of simulation')
     category_data(young, 1, 0)
     category_data(adult, 0, 1)
     category_data(elderly, 1, 1)
@@ -158,7 +161,7 @@ def statistic_window(teen, young, adult, elderly):
 
 if __name__ == '__main__':
     # read needed data from file and fill the grid with people
-    file_name = 'data\\sidegrid70x70.txt'
+    file_name = 'data/sidegrid70x70.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
 
