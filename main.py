@@ -68,16 +68,17 @@ def animate(i):
     ax.tick_params(bottom=False, left=False)
     ax.set_title(f"Smokers around the world. Year {i + 1}.")
     # ax.text(-5.1, 1.5, f'{count_states_list[i][5]}')
-    # ax.text(-12, 1.5, f'Non-smokers_low: {count_states_list[i][5]}',
-    #         bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-    # ax.text(-12, 4.5, f'Non-smokers_high: {count_states_list[i][4]}',
-    #         bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-    # ax.text(-12, 7.5, f'Junior smokers: {count_states_list[i][3]}',
-    #         bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-    # ax.text(-12, 10.5, f'Senior smokers: {count_states_list[i][2]}',
-    #         bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-    # ax.text(-12, 13.5, f'Quit smoking: {count_states_list[i][1]}',
-    #         bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
+    x = 5
+    ax.text(-40, 2*x, f'Non-smokers_low: {count_states_list[i][4]}',
+            bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
+    ax.text(-40, 3*x+5, f'Non-smokers_high: {count_states_list[i][3]}',
+            bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
+    ax.text(-40, 4*x+10, f'Junior smokers: {count_states_list[i][2]}',
+            bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
+    ax.text(-40, 5*x+15, f'Senior smokers: {count_states_list[i][1]}',
+            bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
+    ax.text(-40, 6*x+20, f'Quit smoking: {count_states_list[i][0]}',
+            bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
 
 
 class SmokingAnimation:
@@ -91,17 +92,17 @@ class SmokingAnimation:
         data = arrays_lst[0]
         ax = sns.heatmap(data, square=True, cmap=[
             "#ededed", "#b8b8b8", "#ff6b6b", "#ffa46b", "#ffd24d", "#86ff6b"], cbar_kws={"drawedges": True})
-        ax.text(-5.1, 1.5, '')
-        ax.text(-12, 1.5, f'Non-smokers_low:         ',
-                bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 4.5, f'Non-smokers_high:         ',
-                bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 7.5, f'Junior smokers:         ',
-                bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 10.5, f'Senior smokers:          ',
-                bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
-        ax.text(-12, 13.5, f'Quit smoking:         ',
-                bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
+        # ax.text(-5.1, 1.5, '')
+        # ax.text(-12, 1.5, f'Non-smokers_low:         ',
+        #         bbox={'facecolor': "#86ff6b", 'alpha': 1, 'pad': 10})
+        # ax.text(-12, 4.5, f'Non-smokers_high:         ',
+        #         bbox={'facecolor': "#ffd24d", 'alpha': 1, 'pad': 10})
+        # ax.text(-12, 7.5, f'Junior smokers:         ',
+        #         bbox={'facecolor': "#ffa46b", 'alpha': 1, 'pad': 10})
+        # ax.text(-12, 10.5, f'Senior smokers:          ',
+        #         bbox={'facecolor': "#ff6b6b", 'alpha': 1, 'pad': 10})
+        # ax.text(-12, 13.5, f'Quit smoking:         ',
+        #         bbox={'facecolor': "#b8b8b8", 'alpha': 1, 'pad': 10})
         ax.set(xticklabels=[], yticklabels=[])
         ax.tick_params(bottom=False, left=False)
         c_bar = ax.collections[0].colorbar
@@ -156,7 +157,7 @@ def statistic_window(teen, young, adult, elderly):
 
 if __name__ == '__main__':
     # read needed data from file and fill the grid with people
-    file_name = 'data\\sidegrid50x50.txt'
+    file_name = 'data\\sidegrid70x70.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
 
