@@ -158,7 +158,7 @@ def statistic_window(teen, young, adult, elderly):
 
 if __name__ == '__main__':
     # read needed data from file and fill the grid with people
-    file_name = 'data\\sidegrid70x70.txt'
+    file_name = 'data\\grid70x70.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
 
