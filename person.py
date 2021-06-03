@@ -130,7 +130,7 @@ class Person:
         Return True if the person has dead.
         """
         random_death = random()
-        if random_death <= self.chances_to_die(grid):
+        if random_death <= self.chances_to_die(grid) or self.age >= 100:
             x, y = self.position
             grid.filled_cells.pop((x, y))
             return True
