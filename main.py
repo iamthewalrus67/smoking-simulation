@@ -137,11 +137,11 @@ def statistic_window(teen, young, adult, elderly):
             junior_smokers.append(year[2])
             non_smoker_high.append(year[3])
             non_smokers_low.append(year[4])
-        axes[k, h].plot(y, quit_smoking, label="Quit smoking")
-        axes[k, h].plot(y, junior_smokers, label="Junior smokers")
-        axes[k, h].plot(y, senior_smokers, label="Senior smokers")
-        axes[k, h].plot(y, non_smoker_high, label="Non-smokers (high)")
-        axes[k, h].plot(y, non_smokers_low, label="Non-smokers (low)")
+        axes[k, h].plot(y, quit_smoking, label="Quit smoking", color='#b8b8b8')
+        axes[k, h].plot(y, junior_smokers, label="Junior smokers", color='#ffa46b')
+        axes[k, h].plot(y, senior_smokers, label="Senior smokers", color='#ff6b6b')
+        axes[k, h].plot(y, non_smoker_high, label="Non-smokers (high)", color='#ffd24d')
+        axes[k, h].plot(y, non_smokers_low, label="Non-smokers (low)", color='#86ff6b')
 
     figure, axes = plt.subplots(nrows=2, ncols=2)
 
