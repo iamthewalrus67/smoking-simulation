@@ -2,7 +2,7 @@ from random import random
 
 
 class FiniteStateMachine:
-    '''
+    """
     Represents finite state machine with states:
         'nonsmoker_low_prob'
         'nonsmoker_high_prob'
@@ -11,7 +11,7 @@ class FiniteStateMachine:
         'smoker_in_the_past'
         'dead'
     'dead' is the end state
-    '''
+    """
 
     def __init__(self, grid):
         self.handlers = {'nonsmoker_low_prob': from_nonsmoker,
@@ -23,9 +23,9 @@ class FiniteStateMachine:
         self.grid = grid
 
     def next(self, person):
-        '''
+        """
         Change the person's parameters after 1 year of life.
-        '''
+        """
         smoke_earlier = person.smoker
         age_group_earlier = person.get_person_age_type()
 
@@ -65,10 +65,10 @@ class FiniteStateMachine:
 
 
 def from_nonsmoker(person, grid):
-    '''
+    """
     Return the new state of nonsmoker
     after 1 year of life.
-    '''
+    """
     new_state = person.state
     if person.check_death(grid):
         return 'dead'
@@ -84,10 +84,10 @@ def from_nonsmoker(person, grid):
 
 
 def from_smoker_beginner(person, grid):
-    '''
+    """
     Return the new state of smoker_beginner
     after 1 year of life.
-    '''
+    """
     new_state = 'smoker_beginner'
     person.smoking_period += 1
     if person.check_death(grid):
@@ -102,10 +102,10 @@ def from_smoker_beginner(person, grid):
 
 
 def from_smoker_pro(person, grid):
-    '''
+    """
     Return the new state of smoker_pro
     after 1 year of life.
-    '''
+    """
     new_state = 'smoker_pro'
     person.smoking_period += 1
     if person.check_death(grid):
@@ -118,10 +118,10 @@ def from_smoker_pro(person, grid):
 
 
 def from_smoker_in_the_past(person, grid):
-    '''
+    """
     Return the new state of smoker_in_the_past
     after 1 year of life.
-    '''
+    """
     new_state = 'smoker_in_the_past'
     if person.check_death(grid):
         return 'dead'
