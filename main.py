@@ -18,9 +18,7 @@ def read_from_file(file_name):
     and statistical data (percent of every age group
     on the grid and percent of smokers from them)
     for start fillng the grid.
-
     Needed format of file is descibed in data\example.txt.
-
     Examples of files for reading are in the folder 'data'.
     """
     with open(file_name) as f:
@@ -165,7 +163,7 @@ def statistic_window(teen, young, adult, elderly):
 
 if __name__ == '__main__':
     # read needed data from file and fill the grid with people
-    file_name = 'data/grid70x70.txt'
+    file_name = 'data/centregrid70x70.txt'
     grid, percent_people, percent_smokers = read_from_file(file_name)
     grid.random_start(percent_people, percent_smokers)
 
