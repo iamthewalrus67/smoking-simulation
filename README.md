@@ -15,11 +15,11 @@ The main engine of the project is finite state machine algorithms that run the l
 
 The simulation process looks like this:
 
-![Simulation](img/1.png)
+![Simulation](img/grid70x70_end.png)
 
 When the simulation is over, you can watch statistic plots representing data collected during the simulation
 
-![Result](img/2.png)
+![Result](img/grid70x70_graphs.png)
 
 ## Usage
 
